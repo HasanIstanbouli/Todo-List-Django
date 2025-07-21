@@ -1,11 +1,10 @@
-
 from dotenv import load_dotenv
 from pathlib import Path
 import os
 import base64
 from cryptography.fernet import Fernet
-load_dotenv()
 
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,8 +13,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,7 +37,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'Todo_List.urls'
 
 TEMPLATES = [
@@ -62,14 +58,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Todo_List.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -86,7 +80,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Dhaka'
@@ -95,14 +88,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_PASSWORD_RESET_TIMEOUT = 20
@@ -122,9 +112,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
-
 CELERY_BROKER_URL = 'redis://localhost:6379/4'  # URL of the Redis broker
-CELERY_ACCEPT_CONTENT = ['json']               # Acceptable content formats
-CELERY_TASK_SERIALIZER = 'json'                # Serialization format
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/4'            # Store results in the database
-CELERY_TIMEZONE = 'Asia/Dhaka'      
+CELERY_ACCEPT_CONTENT = ['json']  # Acceptable content formats
+CELERY_TASK_SERIALIZER = 'json'  # Serialization format
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/4'  # Store results in the database
+CELERY_TIMEZONE = 'Asia/Dhaka'
