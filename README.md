@@ -1,12 +1,12 @@
 <h1 align="center">Todo List Web App</h1>
 
-![Create Task](https://github.com/NAHIAN-19/Todo-List-Django/blob/main/Screenshots/create-task.png "Create Task")
-
 ## Live Link: [Todo List](https://todo19.vercel.app/)
 
-*Please note that the PDF download feature is different in the live version due to additional dependencies required by [weasyprint](https://pypi.org/project/weasyprint/).*
+*Please note that the PDF download feature is different in the live version due to additional dependencies required
+by [weasyprint](https://pypi.org/project/weasyprint/).*
 
 ## Table of Contents
+
 - [Tech Stack](#tech_stack)
 - [Installation](#installation)
 - [Features](#features)
@@ -14,7 +14,8 @@
 - [License](#license)
 
 # 💻 Tech Stack:
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) 
+
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
@@ -25,7 +26,7 @@
 ### Cloning from GitHub Repository
 
 To get started with the Todo_List Django Web App, you can clone the repository from GitHub using the following steps:
- 
+
 1. **Clone the repository**:
 
    ```bash
@@ -63,28 +64,29 @@ To get started with the Todo_List Django Web App, you can clone the repository f
 
 7. **Install Redis**:
 
-   - For Windows: Follow this guide to install Redis: [Install Redis on Windows](https://redis.io/docs/getting-started/installation/install-redis-on-windows/)
-   - For MacOS: Use Homebrew:
+    - For Windows: Follow this guide to install
+      Redis: [Install Redis on Windows](https://redis.io/docs/getting-started/installation/install-redis-on-windows/)
+    - For MacOS: Use Homebrew:
 
-     ```bash
-     brew install redis
-     ```
+      ```bash
+      brew install redis
+      ```
 
-   - For Linux: Use the following commands:
+    - For Linux: Use the following commands:
 
-     ```bash
-     sudo apt-get update
-     sudo apt-get install redis-server
-     ```
+      ```bash
+      sudo apt-get update
+      sudo apt-get install redis-server
+      ```
 
-   - Start Redis server:
+    - Start Redis server:
 
-     - For Windows: Run `redis-server` from the Redis installation folder.
-     - For MacOS/Linux: Run the following:
+        - For Windows: Run `redis-server` from the Redis installation folder.
+        - For MacOS/Linux: Run the following:
 
-       ```bash
-       redis-server
-       ```
+          ```bash
+          redis-server
+          ```
 
 8. **Check .env file and follow the link for Email setup**:
 
@@ -96,11 +98,11 @@ To get started with the Todo_List Django Web App, you can clone the repository f
    celery -A Todo_List worker --loglevel=info
    ```
 
-   - Start the Celery Beat scheduler in another terminal window:
+    - Start the Celery Beat scheduler in another terminal window:
 
-     ```bash
-     celery -A Todo_List beat --loglevel=info
-     ```
+      ```bash
+      celery -A Todo_List beat --loglevel=info
+      ```
 
 10. **Run database migrations**:
 
@@ -121,7 +123,8 @@ To get started with the Todo_List Django Web App, you can clone the repository f
     python manage.py runserver
     ```
 
-13. **Open your web browser and go to** [http://localhost:8000](http://localhost:8000) **to access the Todo_List Django Web App**.
+13. **Open your web browser and go to** [http://localhost:8000](http://localhost:8000) **to access the Todo_List Django
+    Web App**.
 
 ## Features
 
@@ -132,14 +135,16 @@ The Todo_List Django Web App offers the following features:
 - **Task Categorization**: Divide tasks into different categories.
 - **Task Reminder**: Send Email to users for specific tasks (with Celery).
 - **User Authentication**: Secure account management (signin, signup, forgot password).
-- **Admin Dashboard**: Access admin dashboard [http://localhost:8000/todo-admin/](http://localhost:8000/todo-admin/) to manage users and tasks.
+- **Admin Dashboard**: Access admin dashboard [http://localhost:8000/todo-admin/](http://localhost:8000/todo-admin/) to
+  manage users and tasks.
 - **Profile Management**: View/Change user details.
 - **Export Task Details**: Download PDF / CSV file of your tasks.
 - **Dark Mode**: Trigger Dark theme for an awesome experience.
 
 ## Contributing
 
-We welcome contributions to improve the Todo_List Django Web App. If you'd like to contribute, please follow these guidelines:
+We welcome contributions to improve the Todo_List Django Web App. If you'd like to contribute, please follow these
+guidelines:
 
 1. Fork the repository.
 

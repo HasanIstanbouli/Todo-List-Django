@@ -1,0 +1,12 @@
+# Django
+__pycache__/
+*.pyc
+*.log
+*.py[cod]
+*$py.class
+db.sqlite3
+.env
+.venv
+media/profile_pictures/*
+# Pycharm
+.idea
