@@ -1,8 +1,11 @@
-from django.utils import timezone
-from .models import Task
-from django.db.models import Q, Case, When, Value, CharField
 from django.contrib.auth import get_user_model
+from django.db.models import Case, CharField, Value, When
+from django.utils import timezone
+
+from .models import Task
+
 User = get_user_model()
+
 
 class OverdueTaskMiddleware:
     def __init__(self, get_response):
@@ -35,4 +38,3 @@ class OverdueTaskMiddleware:
 
         response = self.get_response(request)
         return response
-    

@@ -1,12 +1,14 @@
-from django.contrib.auth.models import AbstractUser, User
+import os
+from datetime import timedelta
+
+from cryptography.fernet import Fernet
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
-from django.conf import settings
-from datetime import timedelta
-import os
 from django.utils.deconstruct import deconstructible
+
 from .utils import resize_image
-from cryptography.fernet import Fernet
 
 
 def get_fernet_key():
@@ -18,10 +20,10 @@ fernet = Fernet(get_fernet_key())
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    firstName = models.CharField(max_length=30, default='Name1')
-    lastName = models.CharField(max_length=30, default='Name2')
-    phone = models.CharField(max_length=15, default='0123456789')
-    address = models.CharField(max_length=180, default='Earth')
+    firstName = models.CharField(max_length=30, default="Name1")
+    lastName = models.CharField(max_length=30, default="Name2")
+    phone = models.CharField(max_length=15, default="0123456789")
+    address = models.CharField(max_length=180, default="Earth")
     email_verified = models.BooleanField(default=False)
     encrypted_id = models.CharField(max_length=256, blank=True, editable=False, unique=True)
 
@@ -29,7 +31,7 @@ class CustomUser(AbstractUser):
         if self.pk is None and not self.encrypted_id:
             super().save(*args, **kwargs)
             self.encrypted_id = fernet.encrypt(str(self.id).encode()).decode()
-            super().save(update_fields=['encrypted_id'])
+            super().save(update_fields=["encrypted_id"])
         else:
             super().save(*args, **kwargs)
 
@@ -59,13 +61,15 @@ class PasswordResetRequest(models.Model):
     def email_verification_limit_reached(user, limit, duration):
         time_threshold = timezone.now() - timedelta(minutes=duration)
         recent_verifications = PasswordResetRequest.objects.filter(
-            user=user,
-            email_verification_timestamp__gt=time_threshold
+            user=user, email_verification_timestamp__gt=time_threshold
         )
         if recent_verifications.count() >= limit:
             first_verification_time = recent_verifications.earliest(
-                'email_verification_timestamp').email_verification_timestamp
-            remaining_time = duration - int((timezone.now() - first_verification_time).total_seconds() // 60)
+                "email_verification_timestamp"
+            ).email_verification_timestamp
+            remaining_time = duration - int(
+                (timezone.now() - first_verification_time).total_seconds() // 60
+            )
             return True, remaining_time
         return False, None
 
@@ -73,10 +77,14 @@ class PasswordResetRequest(models.Model):
     def request_limit_reached(user, limit, duration):
         user_id = CustomUser.decrypt_id(user.encrypted_id)
         time_threshold = timezone.now() - timedelta(minutes=duration)
-        recent_requests = PasswordResetRequest.objects.filter(user_id=user_id, timestamp__gt=time_threshold)
+        recent_requests = PasswordResetRequest.objects.filter(
+            user_id=user_id, timestamp__gt=time_threshold
+        )
         if recent_requests.count() >= limit:
-            first_request_time = recent_requests.earliest('timestamp').timestamp
-            remaining_time = duration - int((timezone.now() - first_request_time).total_seconds() // 60)
+            first_request_time = recent_requests.earliest("timestamp").timestamp
+            remaining_time = duration - int(
+                (timezone.now() - first_request_time).total_seconds() // 60
+            )
             return True, remaining_time
         return False, None
 
@@ -87,26 +95,28 @@ class PasswordResetRequest(models.Model):
 
 
 class Task(models.Model):
-    HIGH = 'High'
-    MEDIUM = 'Medium'
-    LOW = 'Low'
-    PENDING = 'Pending'
-    COMPLETED = 'Completed'
-    OVERDUE = 'Overdue'
+    HIGH = "High"
+    MEDIUM = "Medium"
+    LOW = "Low"
+    PENDING = "Pending"
+    COMPLETED = "Completed"
+    OVERDUE = "Overdue"
     IMPORTANCE_CHOICES = [
-        (HIGH, 'High'),
-        (MEDIUM, 'Medium'),
-        (LOW, 'Low'),
+        (HIGH, "High"),
+        (MEDIUM, "Medium"),
+        (LOW, "Low"),
     ]
     STATUS_CHOICES = [
-        (PENDING, 'Pending'),
-        (COMPLETED, 'Completed'),
-        (OVERDUE, 'Overdue'),
+        (PENDING, "Pending"),
+        (COMPLETED, "Completed"),
+        (OVERDUE, "Overdue"),
     ]
     taskTitle = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True, max_length=500)
-    category = models.ForeignKey('Category', related_name='tasks', on_delete=models.CASCADE, null=True)
-    dueDate = models.DateTimeField(db_column='duedate')
+    category = models.ForeignKey(
+        "Category", related_name="tasks", on_delete=models.CASCADE, null=True
+    )
+    dueDate = models.DateTimeField(db_column="duedate")
     completedDate = models.DateTimeField(null=True, blank=True)
     createdDate = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
@@ -115,11 +125,7 @@ class Task(models.Model):
         choices=IMPORTANCE_CHOICES,
         default=LOW,
     )
-    status = models.CharField(
-        max_length=9,
-        choices=STATUS_CHOICES,
-        default=PENDING
-    )
+    status = models.CharField(max_length=9, choices=STATUS_CHOICES, default=PENDING)
     notificationTime = models.IntegerField(default=4)
     sent_reminder = models.BooleanField(default=False)
     emailNotification = models.BooleanField(default=False)
@@ -130,7 +136,7 @@ class Task(models.Model):
         super().save(*args, **kwargs)
         if is_new:
             self.encrypted_id = fernet.encrypt(str(self.id).encode()).decode()
-            super().save(update_fields=['encrypted_id'])
+            super().save(update_fields=["encrypted_id"])
 
     def __str__(self):
         return self.taskTitle
@@ -141,7 +147,7 @@ class Task(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50, default='Others')
+    name = models.CharField(max_length=50, default="Others")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -165,30 +171,32 @@ class PathAndRename:
         self.path = path
 
     def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
+        ext = filename.split(".")[-1]
 
         username = instance.user.username
 
         count = instance.profile_picture_change_count
-        filename = f'pp_{username}_{count}.{ext}'
+        filename = f"pp_{username}_{count}.{ext}"
 
         return os.path.join(self.path, str(instance.user.id), filename)
 
 
 class Profile(models.Model):
     GENDER_CHOICES = [
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-        ('None', 'Rather not say'),
-        ('Other', 'Other'),
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("None", "Rather not say"),
+        ("Other", "Other"),
     ]
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    profilePicture = models.ImageField(upload_to=PathAndRename('profile_pictures'), default='default.png')
+    profilePicture = models.ImageField(
+        upload_to=PathAndRename("profile_pictures"), default="default.png"
+    )
     profile_picture_change_count = models.PositiveIntegerField(default=0)
     completedTasksCount = models.PositiveIntegerField(default=0)
     enableEmailNotifications = models.BooleanField(default=False)
-    bio = models.TextField(max_length=230, blank=True, default='Searching for the meaning of life')
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='None')
+    bio = models.TextField(max_length=230, blank=True, default="Searching for the meaning of life")
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default="None")
 
     def update_completed_tasks_count(self):
         self.completedTasksCount = self.user.task_set.filter(completed=True).count()
@@ -200,8 +208,11 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old_profile = Profile.objects.get(pk=self.pk)
-            if old_profile.profilePicture and old_profile.profilePicture.name != self.profilePicture.name:
-                if old_profile.profilePicture.name != 'default.png':
+            if (
+                old_profile.profilePicture
+                and old_profile.profilePicture.name != self.profilePicture.name
+            ):
+                if old_profile.profilePicture.name != "default.png":
                     old_profile.profilePicture.delete(save=False)
 
                 self.profile_picture_change_count += 1
@@ -223,7 +234,7 @@ class Solve(models.Model):
 
 class Notifications(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=200, default='This is a notification')
+    name = models.CharField(max_length=200, default="This is a notification")
     date = models.DateTimeField(default=timezone.now)
     unread = models.BooleanField(default=True)
     notificationsCount = models.PositiveIntegerField(default=0)

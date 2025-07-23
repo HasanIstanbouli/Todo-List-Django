@@ -1,0 +1,8 @@
+# Code quality and development tools
+black==24.4.2
+isort==5.13.2
+flake8==7.3.0
+flake8-pyproject==1.2.3
+mypy==1.10.0
+django-stubs==4.2.7
+pre-commit==4.2.0
