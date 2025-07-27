@@ -57,10 +57,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Todo_List.wsgi.application"
 
+db_engine = os.getenv("DB_ENGINE")
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_ssl_mode = os.getenv("DB_SSL_MODE")
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": db_engine,
+        "HOST": db_host,
+        "PORT": db_port,
+        "NAME": db_name,
+        "USER": db_user,
+        "PASSWORD": db_password,
+        "OPTIONS": {
+            "sslmode": db_ssl_mode,
+        },
     }
 }
 
