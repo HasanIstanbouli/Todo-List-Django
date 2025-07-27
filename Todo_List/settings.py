@@ -64,6 +64,26 @@ DATABASES = {
     }
 }
 
+# CACHING, Redis
+REDIS_USE_TLS = os.getenv("REDIS_USE_TLS") == "True"
+REDIS_SCHEME = "rediss://" if REDIS_USE_TLS else "redis://"
+REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_USERNAME = os.getenv("REDIS_USERNAME")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+# https://docs.djangoproject.com/en/5.2/topics/cache/
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"{REDIS_SCHEME}{REDIS_USERNAME}@{REDIS_HOST}:{REDIS_PORT}",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer",
+            "PASSWORD": REDIS_PASSWORD,
+        },
+    }
+}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -106,11 +126,15 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
 EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
-
-CELERY_BROKER_URL = "redis://localhost:6379/4"  # URL of the Redis broker
-CELERY_ACCEPT_CONTENT = ["json"]  # Acceptable content formats
-CELERY_TASK_SERIALIZER = "json"  # Serialization format
-CELERY_RESULT_BACKEND = "redis://localhost:6379/4"  # Store results in the database
-CELERY_TIMEZONE = "Asia/Dhaka"
+# Celery
+if REDIS_PASSWORD:
+    CELERY_BROKER_URL = (
+        f"{REDIS_SCHEME}:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/1?ssl_cert_reqs=CERT_NONE"
+    )
+else:
+    CELERY_BROKER_URL = f"{REDIS_SCHEME}{REDIS_HOST}:{REDIS_PORT}/1"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_TIMEZONE = os.getenv("CELERY_TIMEZONE")
