@@ -9,6 +9,7 @@ db.sqlite3
 .env.*
 !.env.example
 .venv
+venv
 media/profile_pictures/*
 # Pycharm
 .idea
