@@ -8,10 +8,21 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+FERNET_KEY = os.getenv("FERNET_KEY")
 
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
+DEBUG = os.getenv("IS_DEBUG", default=True)
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
+TIME_ZONE = os.getenv("TIME_ZONE")
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_PASSWORD_RESET_TIMEOUT = 20
+AUTH_USER_MODEL = "Todo_List_App.CustomUser"
+LOGIN_URL = "/signin/"
+LANGUAGE_CODE = "en-us"
+USE_I18N = True
+USE_TZ = True
+WSGI_APPLICATION = "Todo_List.wsgi.application"
+ROOT_URLCONF = "Todo_List.urls"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -36,8 +47,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "Todo_List.urls"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -55,12 +64,25 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "Todo_List.wsgi.application"
+db_engine = os.getenv("DB_ENGINE")
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_ssl_mode = os.getenv("DB_SSL_MODE")
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": db_engine,
+        "HOST": db_host,
+        "PORT": db_port,
+        "NAME": db_name,
+        "USER": db_user,
+        "PASSWORD": db_password,
+        "OPTIONS": {
+            "sslmode": db_ssl_mode,
+        },
     }
 }
 
@@ -99,26 +121,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "Asia/Dhaka"
-
-USE_I18N = True
-
-USE_TZ = True
-
 STATIC_URL = "static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_PASSWORD_RESET_TIMEOUT = 20
-AUTH_USER_MODEL = "Todo_List_App.CustomUser"
-FERNET_KEY = os.getenv("FERNET_KEY")
-
-LOGIN_URL = "/signin/"
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
