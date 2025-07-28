@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 FERNET_KEY = os.getenv("FERNET_KEY")
 
-DEBUG = os.getenv("IS_DEBUG", default=True)
+DEBUG = os.getenv("IS_DEBUG", default=True) == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 TIME_ZONE = os.getenv("TIME_ZONE")
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    *(["whitenoise.middleware.WhiteNoiseMiddleware"] if not DEBUG else []),
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

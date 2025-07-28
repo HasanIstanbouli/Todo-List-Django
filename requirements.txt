@@ -38,3 +38,5 @@ webencodings==0.5.1
 zopfli==0.2.3.post1
 psycopg[binary]==3.2.9
 gunicorn==23.0.0
+# Needed in production environemnt without Nginx to server static files
+whitenoise==6.9.0
