@@ -1,0 +1,19 @@
+# Django
+venv
+.venv
+env
+.env
+.env.*
+requirements-dev.txt
+# git
+.github
+.gitignore
+README.md
+LICENSE.txt
+instructions.txt
+# other stuff
+Dockerfile
+terraform
+docker-compose.dev.yml
+pyproject.toml
+.pre-commit-config.yaml
