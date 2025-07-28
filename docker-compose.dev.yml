@@ -1,0 +1,91 @@
+version: '3.8'
+services:
+  redis:
+    container_name: todo-redis-dev
+    image: redis:7.2
+    ports:
+      - '6379:6379'
+    healthcheck:
+      # grep returns 0 only when the string ("PONG") is found.
+      test:
+        [
+          "CMD-SHELL",
+          "redis-cli -p 6379 ping | grep PONG"
+        ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  db:
+    container_name: todo-db-dev
+    image: postgres:16.9
+    ports:
+      - '5432:5432'
+    # env variables to create a new db in postgres container
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - .env.dev
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  todo:
+    container_name: todo-dev
+    image: todo-dev
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '${TODO_BACKEND_PORT}:${TODO_BACKEND_PORT}'
+    env_file:
+      - .env.dev
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  celery:
+    container_name: todo-celery
+    image: todo-dev
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dev
+    command: celery
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  celery-beat:
+    container_name: todo-celery-beat
+    image: todo-dev
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dev
+    command: celery-beat
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:
