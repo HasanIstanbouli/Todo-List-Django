@@ -1,0 +1,146 @@
+name: Todo CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+      FERNET_KEY: ${{secrets.FERNET_KEY}}
+      EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
+      EMAIL_HOST_USER: ${{secrets.EMAIL_HOST_USER}}
+    services:
+      postgres:
+        image: postgres:16.9
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{env.DB_USER}}
+          POSTGRES_PASSWORD: ${{secrets.DB_PASSWORD}}
+          POSTGRES_DB: ${{env.DB_NAME}}
+        options: >-
+          --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+      redis:
+        image: redis:7.2
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s 
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run code quality checks
+        run: pre-commit run --config .pre-commit-config.yaml --all-files
+
+      - name: Check Missing Migrations
+        run: python manage.py makemigrations --check
+
+      - name: Run tests
+        run: |
+          python manage.py migrate
+          python manage.py test
+
+      - name: Django --deploy checks
+        run: python manage.py check --deploy
+
+      - name: Scan Python dependencies for vulnerabilities
+        continue-on-error: true
+        run: pip-audit
+
+      - name: Run the server and test it
+        run: |
+          python manage.py runserver 0.0.0.0:${TODO_BACKEND_PORT} &
+          sleep 10
+          curl -sSf http://localhost:${TODO_BACKEND_PORT} > /dev/null && echo "Server is Up"
+
+  bootstrap_infra:
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_do_token: ${{secrets.TF_VAR_do_token}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      SPACES_ACCESS_KEY_ID: ${{secrets.SPACES_ACCESS_KEY_ID}}
+      SPACES_SECRET_ACCESS_KEY: ${{secrets.SPACES_SECRET_ACCESS_KEY}}
+    outputs: # Define outputs for the entire job
+      container_reg: ${{ steps.tf_todo_cr.outputs.reg_url }}  # Maps step output to job output
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+      - name: Init Terraform
+        working-directory: terraform/envs/stage/bootstrap
+        run: ./init.sh
+
+      - name: Terraform Plan
+        working-directory: terraform/envs/stage/bootstrap
+        run: terraform plan -input=false
+
+      - name: Terraform Apply and Output
+        id: tf_todo_cr
+        working-directory: terraform/envs/stage/bootstrap
+        run: |
+          terraform apply -auto-approve
+          echo "reg_url=$(terraform output -raw container_registry_url)" >> $GITHUB_OUTPUT
+  
+  
+  docker_build_push:
+    if: github.ref_name == 'main' || github.ref_name == 'develop'
+    needs: bootstrap_infra
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Registry login
+        run: doctl registry login
+
+      - name: Choosing the right image tag...
+        id: image_tag
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "IMAGE_TAG=stable" >> $GITHUB_OUTPUT
+          else
+            echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
+          fi
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ needs.bootstrap_infra.outputs.container_reg }}/todo:${{ steps.image_tag.outputs.IMAGE_TAG }}
