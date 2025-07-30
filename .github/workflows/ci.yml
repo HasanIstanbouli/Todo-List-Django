@@ -10,12 +10,42 @@ jobs:
   test:
     runs-on: self-hosted
     env:
+      # DB
       DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+      DB_USER: ${{vars.DB_PASSWORD}}
+      DB_NAME: ${{vars.DB_NAME}}
+      DB_PORT: ${{vars.DB_PORT}}
+      DB_HOST: ${{vars.DB_HOST}}
+      DB_ENGINE: ${{vars.DB_ENGINE}}
+      DB_SSL_MODE: ${{vars.DB_SSL_MODE}}
+      # Redis
       REDIS_PASSWORD: ${{secrets.REDIS_PASSWORD}}
+      REDIS_USE_TLS: ${{vars.REDIS_USE_TLS}}
+      REDIS_USERNAME: ${{vars.REDIS_USERNAME}}
+      REDIS_PORT: ${{vars.REDIS_PORT}}
+      REDIS_HOST: ${{vars.REDIS_HOST}}
+      # Django
       SECRET_KEY: ${{secrets.SECRET_KEY}}
       FERNET_KEY: ${{secrets.FERNET_KEY}}
-      EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
+      CELERY_TIMEZONE: ${{vars.CELERY_TIMEZONE}}
+      ALLOWED_HOSTS: ${{vars.ALLOWED_HOSTS}}
+      CSRF_TRUSTED_ORIGINS: ${{vars.CSRF_TRUSTED_ORIGINS}}
+      TIME_ZONE: ${{vars.TIME_ZONE}}
+      IS_DEBUG: ${{vars.IS_DEBUG}}
+      TODO_BACKEND_PORT: ${{vars.TODO_BACKEND_PORT}}
+      # Django super-user
+      DJANGO_SUPERUSER_USERNAME: ${{vars.DJANGO_SUPERUSER_USERNAME}}
+      DJANGO_SUPERUSER_FIRST_NAME: ${{vars.DJANGO_SUPERUSER_FIRST_NAME}}
+      DJANGO_SUPERUSER_LAST_NAME: ${{vars.DJANGO_SUPERUSER_LAST_NAME}}
+      DJANGO_SUPERUSER_PASSWORD: ${{vars.DJANGO_SUPERUSER_PASSWORD}}
+      # Email settings
       EMAIL_HOST_USER: ${{secrets.EMAIL_HOST_USER}}
+      EMAIL_HOST_PASSWORD: ${{secrets.EMAIL_HOST_PASSWORD}}
+      EMAIL_BACKEND: ${{vars.EMAIL_BACKEND}}
+      EMAIL_HOST: ${{vars.EMAIL_HOST}}
+      EMAIL_PORT: ${{vars.EMAIL_PORT}}
+      EMAIL_USE_TLS: ${{vars.EMAIL_USE_TLS}}
+
     services:
       postgres:
         image: postgres:16.9
