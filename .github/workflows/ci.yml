@@ -112,7 +112,16 @@ jobs:
     needs: test
     runs-on: self-hosted
     env:
+      # TF_VAR
       TF_VAR_do_token: ${{secrets.TF_VAR_do_token}}
+      TF_VAR_registry_name: ${{vars.TF_VAR_registry_name}}
+      TF_VAR_container_registry_subscription_plan: ${{vars.TF_VAR_container_registry_subscription_plan}}
+      TF_VAR_todo_project_name: ${{vars.TF_VAR_todo_project_name}}
+      # Terraform
+      TF_STG_BACKEND_BUCKET: ${{vars.TF_STG_BACKEND_BUCKET}}
+      TF_STG_BACKEND_KEY: ${{vars.TF_STG_BACKEND_KEY}}
+      TF_STG_BACKEND_REGION: ${{vars.TF_STG_BACKEND_REGION}}
+      # S3 config
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       SPACES_ACCESS_KEY_ID: ${{secrets.SPACES_ACCESS_KEY_ID}}
