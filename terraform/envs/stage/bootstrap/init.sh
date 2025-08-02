@@ -2,7 +2,7 @@
 
 # Load from environment (could come from .env file or CI/CD secrets)
 : "${TF_STG_BACKEND_BUCKET:?Missing TF_STG_BACKEND_BUCKET}"
-: "${TF_STG_BACKEND_KEY:?Missing TF_STG_BACKEND_KEY}"
+: "${TF_STG_BOOTSTRAP_BACKEND_KEY:?Missing TF_STG_BOOTSTRAP_BACKEND_KEY}"
 : "${TF_STG_BACKEND_REGION:?Missing TF_STG_BACKEND_REGION}"
 # For S3 to work...
 : "${AWS_ACCESS_KEY_ID:?Missing AWS_ACCESS_KEY_ID}"
@@ -13,5 +13,5 @@
 
 terraform init \
   -backend-config="bucket=${TF_STG_BACKEND_BUCKET}" \
-  -backend-config="key=${TF_STG_BACKEND_KEY}" \
+  -backend-config="key=${TF_STG_BOOTSTRAP_BACKEND_KEY}" \
   -backend-config="region=${TF_STG_BACKEND_REGION}"
