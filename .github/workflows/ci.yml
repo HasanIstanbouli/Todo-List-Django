@@ -5,6 +5,70 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+env:
+  # Terraform
+  TF_STG_BACKEND_BUCKET: ${{vars.TF_STG_BACKEND_BUCKET}}
+  TF_STG_BOOTSTRAP_BACKEND_KEY: ${{vars.TF_STG_BOOTSTRAP_BACKEND_KEY}}
+  TF_STG_APP_INFRA_BACKEND_KEY: ${{vars.TF_STG_APP_INFRA_BACKEND_KEY}}
+  TF_STG_BACKEND_REGION: ${{vars.TF_STG_BACKEND_REGION}}
+  # S3 config
+  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+  SPACES_ACCESS_KEY_ID: ${{secrets.SPACES_ACCESS_KEY_ID}}
+  SPACES_SECRET_ACCESS_KEY: ${{secrets.SPACES_SECRET_ACCESS_KEY}}
+  # TF_VAR_
+  TF_VAR_do_token: ${{secrets.TF_VAR_do_token}}
+  TF_VAR_registry_name: ${{vars.TF_VAR_registry_name}}
+  TF_VAR_container_registry_subscription_plan: ${{vars.TF_VAR_container_registry_subscription_plan}}
+  TF_VAR_todo_project_name: ${{vars.TF_VAR_todo_project_name}}
+  # TF_VAR_db
+  TF_VAR_db_name: ${{vars.TF_VAR_db_name}}
+  TF_VAR_db_cluster_size: ${{vars.TF_VAR_db_cluster_size}}
+  TF_VAR_db_pg_version: ${{vars.TF_VAR_db_pg_version}}
+  TF_VAR_db_node_count: ${{vars.TF_VAR_db_node_count}}
+  # TF_VAR_val_key
+  TF_VAR_val_key_name: ${{vars.TF_VAR_val_key_name}}
+  TF_VAR_val_key_cluster_size: ${{vars.TF_VAR_val_key_cluster_size}}
+  TF_VAR_val_key_version: ${{vars.TF_VAR_val_key_version}}
+  TF_VAR_val_key_node_count: ${{vars.TF_VAR_val_key_node_count}}
+  # TF_VAR_app_platform
+  TF_VAR_app_name: ${{vars.TF_VAR_app_name}}
+  TF_VAR_image_tag: ${{vars.TF_VAR_image_tag}}
+  TF_VAR_image_repository: ${{vars.TF_VAR_image_repository}}
+  TF_VAR_app_platform_auto_deploy: ${{vars.TF_VAR_app_platform_auto_deploy}}
+  TF_VAR_instance_count: ${{vars.TF_VAR_instance_count}}
+  TF_VAR_instance_size_slug: ${{vars.TF_VAR_instance_size_slug}}
+  TF_VAR_http_port: ${{vars.TF_VAR_http_port}}
+  TF_VAR_celery_app_name: ${{vars.TF_VAR_celery_app_name}}
+  TF_VAR_celery_run_command: ${{vars.TF_VAR_celery_run_command}}
+  TF_VAR_celery_instance_count: ${{vars.TF_VAR_celery_instance_count}}
+  TF_VAR_celery_instance_size_slug: ${{vars.TF_VAR_celery_instance_size_slug}}
+  TF_VAR_celery_beat_app_name: ${{vars.TF_VAR_celery_beat_app_name}}
+  TF_VAR_celery_beat_run_command: ${{vars.TF_VAR_celery_beat_run_command}}
+  TF_VAR_celery_beat_instance_count: ${{vars.TF_VAR_celery_beat_instance_count}}
+  TF_VAR_celery_beat_instance_size_slug: ${{vars.TF_VAR_celery_beat_instance_size_slug}}
+  # TF_VAR_app_platform runtime env-vars
+  TF_VAR_SECRET_KEY: ${{secrets.TF_VAR_SECRET_KEY}}
+  TF_VAR_FERNET_KEY: ${{secrets.TF_VAR_FERNET_KEY}}
+  TF_VAR_ALLOWED_HOSTS: ${{secrets.TF_VAR_ALLOWED_HOSTS}}
+  TF_VAR_CSRF_TRUSTED_ORIGINS: ${{secrets.TF_VAR_CSRF_TRUSTED_ORIGINS}}
+  TF_VAR_TIME_ZONE: ${{vars.TF_VAR_TIME_ZONE}}
+  TF_VAR_IS_DEBUG: ${{vars.TF_VAR_IS_DEBUG}}
+  TF_VAR_DJANGO_SUPERUSER_USERNAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_USERNAME}}
+  TF_VAR_DJANGO_SUPERUSER_FIRST_NAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_FIRST_NAME}}
+  TF_VAR_DJANGO_SUPERUSER_LAST_NAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_LAST_NAME}}
+  TF_VAR_DJANGO_SUPERUSER_EMAIL: ${{vars.TF_VAR_DJANGO_SUPERUSER_EMAIL}}
+  TF_VAR_DJANGO_SUPERUSER_PASSWORD: ${{secrets.TF_VAR_DJANGO_SUPERUSER_PASSWORD}}
+  TF_VAR_EMAIL_BACKEND: ${{vars.TF_VAR_EMAIL_BACKEND}}
+  TF_VAR_EMAIL_HOST: ${{vars.TF_VAR_EMAIL_HOST}}
+  TF_VAR_EMAIL_PORT: ${{vars.TF_VAR_EMAIL_PORT}}
+  TF_VAR_EMAIL_USE_TLS: ${{vars.TF_VAR_EMAIL_USE_TLS}}
+  TF_VAR_EMAIL_HOST_USER: ${{secrets.TF_VAR_EMAIL_HOST_USER}}
+  TF_VAR_EMAIL_HOST_PASSWORD: ${{secrets.TF_VAR_EMAIL_HOST_PASSWORD}}
+  TF_VAR_DB_ENGINE: ${{vars.TF_VAR_DB_ENGINE}}
+  TF_VAR_DB_SSL_MODE: ${{vars.TF_VAR_DB_SSL_MODE}}
+  TF_VAR_REDIS_USE_TLS: ${{vars.TF_VAR_REDIS_USE_TLS}}
+  TF_VAR_CELERY_TIMEZONE: ${{vars.TF_VAR_CELERY_TIMEZONE}}
 
 jobs:
   test:
@@ -111,21 +175,6 @@ jobs:
     if: github.ref_name == 'main' || github.ref_name == 'develop'
     needs: test
     runs-on: self-hosted
-    env:
-      # TF_VAR
-      TF_VAR_do_token: ${{secrets.TF_VAR_do_token}}
-      TF_VAR_registry_name: ${{vars.TF_VAR_registry_name}}
-      TF_VAR_container_registry_subscription_plan: ${{vars.TF_VAR_container_registry_subscription_plan}}
-      TF_VAR_todo_project_name: ${{vars.TF_VAR_todo_project_name}}
-      # Terraform
-      TF_STG_BACKEND_BUCKET: ${{vars.TF_STG_BACKEND_BUCKET}}
-      TF_STG_BOOTSTRAP_BACKEND_KEY: ${{vars.TF_STG_BOOTSTRAP_BACKEND_KEY}}
-      TF_STG_BACKEND_REGION: ${{vars.TF_STG_BACKEND_REGION}}
-      # S3 config
-      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      SPACES_ACCESS_KEY_ID: ${{secrets.SPACES_ACCESS_KEY_ID}}
-      SPACES_SECRET_ACCESS_KEY: ${{secrets.SPACES_SECRET_ACCESS_KEY}}
     outputs: # Define outputs for the entire job
       container_reg: ${{ steps.tf_todo_cr.outputs.reg_url }}  # Maps step output to job output
     steps:
@@ -183,3 +232,27 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ needs.bootstrap_infra.outputs.container_reg }}/todo:${{ steps.image_tag.outputs.IMAGE_TAG }}
+
+  deploy_staging_app:
+    if: github.ref_name == 'develop'
+    needs: docker_build_push
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+      - name: Init Terraform
+        working-directory: terraform/envs/stage/app_infra
+        run: ./init.sh
+
+      - name: Terraform Plan
+        working-directory: terraform/envs/stage/app_infra
+        run: terraform plan -input=false
+
+      - name: Terraform Apply and Output
+        working-directory: terraform/envs/stage/app_infra
+        run: terraform apply -auto-approve
