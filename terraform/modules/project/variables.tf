@@ -10,6 +10,6 @@ variable "name" {
 
 variable "resources" {
   type = set(string)
-  default = []
+  default     = null
   description = "resources for this project"
 }
