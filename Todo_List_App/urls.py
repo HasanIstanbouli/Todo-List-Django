@@ -45,6 +45,8 @@ urlpatterns = [
     # AJAX/utility URLs
     path("validate-field/", views.validate_field, name="validate_field"),
     path("invalidate-session/", views.invalidate_session, name="invalidate_session"),
+    # Health check endpoint
+    path("health/", views.health_check, name="health_check"),
 ]
 
 if settings.DEBUG:
