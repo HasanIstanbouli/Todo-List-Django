@@ -186,16 +186,16 @@ jobs:
         with:
           terraform_version: 1.7.5
       - name: Init Terraform
-        working-directory: terraform/envs/stage/bootstrap
+        working-directory: terraform/digital_ocean/bootstrap
         run: ./init.sh
 
       - name: Terraform Plan
-        working-directory: terraform/envs/stage/bootstrap
+        working-directory: terraform/digital_ocean/bootstrap
         run: terraform plan -input=false
 
       - name: Terraform Apply and Output
         id: tf_todo_cr
-        working-directory: terraform/envs/stage/bootstrap
+        working-directory: terraform/digital_ocean/bootstrap
         run: |
           terraform apply -auto-approve
           echo "reg_url=$(terraform output -raw container_registry_url)" >> $GITHUB_OUTPUT
@@ -246,13 +246,13 @@ jobs:
         with:
           terraform_version: 1.7.5
       - name: Init Terraform
-        working-directory: terraform/envs/stage/app_infra
+        working-directory: terraform/digital_ocean/envs/stage
         run: ./init.sh
 
       - name: Terraform Plan
-        working-directory: terraform/envs/stage/app_infra
+        working-directory: terraform/digital_ocean/envs/stage
         run: terraform plan -input=false
 
       - name: Terraform Apply and Output
-        working-directory: terraform/envs/stage/app_infra
+        working-directory: terraform/digital_ocean/envs/stage
         run: terraform apply -auto-approve
