@@ -2,7 +2,7 @@ data "digitalocean_project" "todo_project" {
   name = var.todo_project_name
 }
 module "db" {
-  source          = "../../modules/pg_database"
+  source          = "../../../modules/pg_database"
   region          = var.region
   db_name         = var.db_name
   db_cluster_size = var.db_cluster_size
@@ -11,7 +11,7 @@ module "db" {
   project_id      = data.digitalocean_project.todo_project.id
 }
 module "valkey" {
-  source          = "../../modules/val_key"
+  source          = "../../../modules/val_key"
   region          = var.region
   val_key_name    = var.val_key_name
   cluster_size    = var.val_key_cluster_size
@@ -24,7 +24,7 @@ data "digitalocean_kubernetes_versions" "available" {
   # Get the latest available DO Kubernetes versions (we'll pick index 0)
 }
 module "kubernetes_cluster" {
-  source                        = "../../modules/kubernetes"
+  source                        = "../../../modules/kubernetes"
   cluster_name                  = var.kubernetes_cluster_name
   region                        = var.region
   k8s_version                   = data.digitalocean_kubernetes_versions.available.valid_versions[0]
