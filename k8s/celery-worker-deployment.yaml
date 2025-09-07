@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-celery-worker
+  namespace: todo-list
+  labels:
+    app: todo-list
+    component: celery-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-list
+      component: celery-worker
+  template:
+    metadata:
+      labels:
+        app: todo-list
+        component: celery-worker
+    spec:
+      containers:
+        - name: todo-list-celery-worker
+          image: registry.digitalocean.com/todo-django-registry/todo:latest
+          command: [ "./entrypoint.sh" ]
+          args: [ "celery" ]
+          envFrom:
+            - configMapRef:
+                name: todo-list-config
+            - secretRef:
+                name: todo-secret
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-web
+  namespace: todo-list
+  labels:
+    app: todo-list
+    component: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-list
+      component: web
+  template:
+    metadata:
+      labels:
+        app: todo-list
+        component: web
+    spec:
+      containers:
+        - name: todo-list-web
+          image: registry.digitalocean.com/todo-django-registry/todo:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: todo-list-config
+            - secretRef:
+                name: todo-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
