@@ -72,6 +72,30 @@ resource "kubernetes_secret" "todo" {
   type       = "Opaque"
   depends_on = [module.db, module.valkey, module.kubernetes_cluster, kubernetes_namespace.todo]
 }
+resource "kubernetes_config_map" "todo_config" {
+  metadata {
+    name      = var.kubernetes_todo_config_name
+    namespace = var.kubernetes_todo_namespace
+  }
+  data = {
+    ALLOWED_HOSTS               = var.django_allowed_hosts
+    CSRF_TRUSTED_ORIGINS        = var.django_csrf_trusted_origins
+    TIME_ZONE                   = var.django_time_zone
+    IS_DEBUG                    = var.django_is_debug
+    TODO_BACKEND_PORT           = var.django_todo_backend_port
+    DJANGO_SUPERUSER_USERNAME   = var.django_superuser_username
+    DJANGO_SUPERUSER_FIRST_NAME = var.django_superuser_first_name
+    DJANGO_SUPERUSER_LAST_NAME  = var.django_superuser_last_name
+    EMAIL_BACKEND               = var.django_email_backend
+    EMAIL_USE_TLS               = var.django_email_use_tls
+    EMAIL_PORT                  = var.django_email_port
+    CELERY_TIMEZONE             = var.django_celery_timezone
+    REDIS_USE_TLS               = var.django_redis_use_tls
+    DB_SSL_MODE                 = var.django_db_ssl_mode
+    DB_ENGINE                   = var.django_db_engine
+  }
+  depends_on = [module.kubernetes_cluster, kubernetes_namespace.todo]
+}
 resource "kubernetes_namespace" "ingress_nginx" {
   metadata {
     name = var.kubernetes_ingress_namespace
