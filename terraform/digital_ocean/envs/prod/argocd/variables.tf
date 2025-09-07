@@ -11,11 +11,6 @@ variable "argocd_namespace" {
   description = "Namespace for ArgoCD installation"
   default     = "argocd"
 }
-variable "argocd_admin_password" {
-  type        = string
-  description = "Admin password for ArgoCD"
-  sensitive   = true
-}
 variable "argocd_application_name" {
   type        = string
   description = "Name of the ArgoCD application"

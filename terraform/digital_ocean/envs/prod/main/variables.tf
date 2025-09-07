@@ -165,3 +165,14 @@ variable "django_db_engine" {
   type      = string
   sensitive = true
 }
+# ArgoCD
+variable "argocd_namespace" {
+  type        = string
+  description = "Namespace for ArgoCD installation"
+  default     = "argocd"
+}
+variable "argocd_admin_password" {
+  type        = string
+  description = "Admin password for ArgoCD"
+  sensitive   = true
+}

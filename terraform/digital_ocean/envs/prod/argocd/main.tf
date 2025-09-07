@@ -1,52 +1,3 @@
-# ArgoCD Namespace
-resource "kubernetes_namespace" "argocd" {
-  metadata {
-    name = var.argocd_namespace
-  }
-}
-# Install ArgoCD using Helm
-resource "helm_release" "argocd" {
-  name       = "argocd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version    = "5.51.6"
-  namespace  = var.argocd_namespace
-  set = [
-    {
-      name  = "configs.params.server\\.insecure"
-      value = "true"
-    },
-    {
-      name  = "server.ingress.enabled"
-      value = "true"
-    },
-    {
-      name  = "server.ingress.ingressClassName"
-      value = "nginx"
-    },
-    {
-      name  = "server.ingress.paths[0]"
-      value = "/argocd"
-    },
-    {
-      name  = "server.ingress.pathType"
-      value = "Prefix"
-    },
-    {
-      name  = "configs.params.server\\.basehref"
-      value = "/argocd"
-    },
-    {
-      name  = "configs.params.server\\.rootpath"
-      value = "/argocd"
-    },
-    {
-      name  = "configs.secret.argocdServerAdminPassword"
-      value = bcrypt(var.argocd_admin_password)
-    },
-  ]
-  depends_on = [kubernetes_namespace.argocd]
-}
 # ArgoCD Application
 resource "kubernetes_manifest" "argocd_application" {
   manifest = {
@@ -81,5 +32,4 @@ resource "kubernetes_manifest" "argocd_application" {
       }
     }
   }
-  depends_on = [helm_release.argocd]
 }
