@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       # DB
       DB_PASSWORD: ${{secrets.DB_PASSWORD}}
@@ -117,7 +117,7 @@ jobs:
       TF_VAR_registry_name: ${{vars.TF_VAR_registry_name}}
       TF_VAR_container_registry_subscription_plan: ${{vars.TF_VAR_container_registry_subscription_plan}}
       TF_VAR_todo_project_name: ${{vars.TF_VAR_todo_project_name}}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs: # Define outputs for the entire job
       container_reg: ${{ steps.tf_todo_cr.outputs.reg_url }}  # Maps step output to job output
     steps:
@@ -143,7 +143,7 @@ jobs:
   docker_build_push:
     if: github.ref_name == 'main' || github.ref_name == 'develop'
     needs: bootstrap_infra
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
