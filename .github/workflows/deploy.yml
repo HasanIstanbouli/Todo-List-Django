@@ -32,7 +32,7 @@ env:
 jobs:
   deploy_staging:
     if: github.event.inputs.environment == 'staging'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       # Init Terraform
       TF_STG_BACKEND_BUCKET: ${{vars.TF_STG_BACKEND_BUCKET}}
@@ -141,7 +141,7 @@ jobs:
       TF_VAR_django_db_engine: ${{vars.TF_PROD_django_db_engine}}
       # Ingress namespace
       TF_VAR_kubernetes_ingress_namespace: ${{vars.TF_PROD_kubernetes_ingress_namespace}}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
 
   install_ArgoCD_on_production:
     if: github.event.inputs.environment == 'production'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       # Init Terraform
       TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
