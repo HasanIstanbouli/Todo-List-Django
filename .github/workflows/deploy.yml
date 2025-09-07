@@ -122,6 +122,23 @@ jobs:
       TF_VAR_django_email_host: ${{vars.TF_VAR_EMAIL_HOST}}
       TF_VAR_django_email_host_user: ${{secrets.TF_VAR_EMAIL_HOST_USER}}
       TF_VAR_django_email_host_password: ${{secrets.TF_VAR_EMAIL_HOST_PASSWORD}}
+      # Kubernetes configmap
+      TF_VAR_kubernetes_todo_config_name: ${{vars.TF_PROD_kubernetes_todo_config_name}}
+      TF_VAR_django_allowed_hosts: ${{vars.TF_PROD_django_allowed_hosts}}
+      TF_VAR_django_csrf_trusted_origins: ${{vars.TF_PROD_django_csrf_trusted_origins}}
+      TF_VAR_django_time_zone: ${{vars.TF_PROD_django_time_zone}}
+      TF_VAR_django_is_debug: ${{vars.TF_PROD_django_is_debug}}
+      TF_VAR_django_todo_backend_port: ${{vars.TF_PROD_django_todo_backend_port}}
+      TF_VAR_django_superuser_username: ${{vars.TF_PROD_django_superuser_username}}
+      TF_VAR_django_superuser_first_name: ${{vars.TF_PROD_django_superuser_first_name}}
+      TF_VAR_django_superuser_last_name: ${{vars.TF_PROD_django_superuser_last_name}}
+      TF_VAR_django_email_backend: ${{vars.TF_PROD_django_email_backend}}
+      TF_VAR_django_email_use_tls: ${{vars.TF_PROD_django_email_use_tls}}
+      TF_VAR_django_email_port: ${{vars.TF_PROD_django_email_port}}
+      TF_VAR_django_celery_timezone: ${{vars.TF_PROD_django_celery_timezone}}
+      TF_VAR_django_redis_use_tls: ${{vars.TF_PROD_django_redis_use_tls}}
+      TF_VAR_django_db_ssl_mode: ${{vars.TF_PROD_django_db_ssl_mode}}
+      TF_VAR_django_db_engine: ${{vars.TF_PROD_django_db_engine}}
       # Ingress namespace
       TF_VAR_kubernetes_ingress_namespace: ${{vars.TF_PROD_kubernetes_ingress_namespace}}
     runs-on: self-hosted
