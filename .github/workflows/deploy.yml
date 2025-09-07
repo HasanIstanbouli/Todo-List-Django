@@ -175,7 +175,7 @@ jobs:
         working-directory: terraform/digital_ocean/envs/prod/main
         run: terraform apply -auto-approve
 
-  install_ArgoCD_on_production:
+  install_argocd_app_on_production:
     if: github.event.inputs.environment == 'production'
     needs: deploy_production
     environment: Production
@@ -200,11 +200,11 @@ jobs:
         with:
           terraform_version: 1.7.5
       - name: Init Terraform
-        working-directory: terraform/digital_ocean/envs/prod/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd_app
         run: ./init.sh
       - name: Terraform Plan
-        working-directory: terraform/digital_ocean/envs/prod/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd_app
         run: terraform plan -input=false
       - name: Terraform Apply and Output
-        working-directory: terraform/digital_ocean/envs/prod/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd_app
         run: terraform apply -auto-approve
