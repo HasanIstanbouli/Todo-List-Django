@@ -153,6 +153,10 @@ jobs:
       TF_VAR_django_db_engine: ${{vars.TF_PROD_django_db_engine}}
       # Ingress namespace
       TF_VAR_kubernetes_ingress_namespace: ${{vars.TF_PROD_kubernetes_ingress_namespace}}
+      # ArgoCD namespace
+      TF_VAR_argocd_namespace: ${{vars.TF_PROD_argocd_namespace}}
+      # ArgoCD resource
+      TF_VAR_argocd_admin_password: ${{secrets.TF_PROD_argocd_admin_password}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -182,10 +186,6 @@ jobs:
       TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
       TF_PROD_ARGOCD_BACKEND_KEY: ${{vars.TF_PROD_ARGOCD_BACKEND_KEY}}
       TF_PROD_BACKEND_REGION: ${{vars.TF_PROD_BACKEND_REGION}}
-      # ArgoCD namespace
-      TF_VAR_argocd_namespace: ${{vars.TF_PROD_argocd_namespace}}
-      # ArgoCD resource
-      TF_VAR_argocd_admin_password: ${{secrets.TF_PROD_argocd_admin_password}}
       # ArgoCD application
       TF_VAR_argocd_application_name: ${{vars.TF_PROD_argocd_application_name}}
       TF_VAR_argocd_repo_url: ${{vars.TF_PROD_argocd_repo_url}}
