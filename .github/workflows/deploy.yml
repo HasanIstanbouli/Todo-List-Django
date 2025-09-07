@@ -177,6 +177,7 @@ jobs:
     environment: Production
     runs-on: ubuntu-latest
     env:
+      TF_VAR_kubernetes_cluster_name: ${{vars.TF_PROD_kubernetes_cluster_name}}
       # Init Terraform
       TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
       TF_PROD_ARGOCD_BACKEND_KEY: ${{vars.TF_PROD_ARGOCD_BACKEND_KEY}}
