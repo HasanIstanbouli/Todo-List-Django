@@ -32,6 +32,7 @@ env:
 jobs:
   deploy_staging:
     if: github.event.inputs.environment == 'staging'
+    environment: Staging
     runs-on: ubuntu-latest
     env:
       # Init Terraform
@@ -95,6 +96,7 @@ jobs:
 
   deploy_production:
     if: github.event.inputs.environment == 'production'
+    environment: Production
     env:
       # Init Terraform
       TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
@@ -161,6 +163,7 @@ jobs:
 
   install_ArgoCD_on_production:
     if: github.event.inputs.environment == 'production'
+    environment: Production
     runs-on: ubuntu-latest
     env:
       # Init Terraform
