@@ -172,10 +172,10 @@ jobs:
       # ArgoCD resource
       TF_VAR_argocd_admin_password: ${{secrets.TF_PROD_argocd_admin_password}}
       # ArgoCD application
-      TF_VAR_argocd_application_name: ${{TF_PROD_argocd_application_name}}
-      TF_VAR_argocd_repo_url: ${{TF_PROD_argocd_repo_url}}
-      TF_VAR_argocd_target_revision: ${{TF_PROD_argocd_target_revision}}
-      TF_VAR_argocd_path: ${{TF_PROD_argocd_path}}
+      TF_VAR_argocd_application_name: ${{vars.TF_PROD_argocd_application_name}}
+      TF_VAR_argocd_repo_url: ${{vars.TF_PROD_argocd_repo_url}}
+      TF_VAR_argocd_target_revision: ${{vars.TF_PROD_argocd_target_revision}}
+      TF_VAR_argocd_path: ${{vars.TF_PROD_argocd_path}}
       TF_VAR_kubernetes_todo_namespace: ${{vars.TF_PROD_kubernetes_todo_namespace}}
     steps:
       - name: Checkout code
