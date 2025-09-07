@@ -18,9 +18,11 @@ from django.contrib.auth import (
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
+from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import connection
 from django.db.models import Case, CharField, F, Q, Value, When
 from django.http import Http404, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1275,3 +1277,23 @@ class ExportPDF(View):
         notifications.notificationsCount += 1
         notifications.save()
         return response
+
+
+def health_check(request):
+    """
+    Health check endpoint
+    """
+    try:
+        # Check database connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+
+        # Check cache connection
+        cache.set("health_check", "ok", 10)
+        cache.get("health_check")
+
+        return JsonResponse(
+            {"status": "healthy", "database": "connected", "cache": "connected"}, status=200
+        )
+    except Exception as e:
+        return JsonResponse({"status": "unhealthy", "error": str(e)}, status=503)

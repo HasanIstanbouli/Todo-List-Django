@@ -2,7 +2,7 @@ data "digitalocean_project" "todo_project" {
   name = var.todo_project_name
 }
 module "db" {
-  source          = "../../../modules/pg_database"
+  source          = "../../modules/pg_database"
   region          = var.region
   db_name         = var.db_name
   db_cluster_size = var.db_cluster_size
@@ -11,7 +11,7 @@ module "db" {
   project_id      = data.digitalocean_project.todo_project.id
 }
 module "valkey" {
-  source          = "../../../modules/val_key"
+  source          = "../../modules/val_key"
   region          = var.region
   val_key_name    = var.val_key_name
   cluster_size    = var.val_key_cluster_size
@@ -20,8 +20,8 @@ module "valkey" {
   project_id      = data.digitalocean_project.todo_project.id
 }
 module "todo_app_platform" {
-  depends_on = [module.valkey, module.db]
-  source                         = "../../../modules/app_platform"
+  depends_on                     = [module.valkey, module.db]
+  source                         = "../../modules/app_platform"
   region                         = var.region
   app_name                       = var.app_name
   image_tag                      = var.image_tag

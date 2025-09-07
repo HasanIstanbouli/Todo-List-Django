@@ -1,0 +1,195 @@
+name: Todo Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment to deploy'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+env:
+  # TODO: Add specific env-vars for each environment
+  TF_VAR_do_token: ${{secrets.TF_VAR_do_token}}
+  TF_VAR_todo_project_name: ${{secrets.TF_VAR_todo_project_name}}
+  # S3 config
+  AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+  SPACES_ACCESS_KEY_ID: ${{secrets.SPACES_ACCESS_KEY_ID}}
+  SPACES_SECRET_ACCESS_KEY: ${{secrets.SPACES_SECRET_ACCESS_KEY}}
+  # TF_VAR_db
+  TF_VAR_db_name: ${{vars.TF_VAR_db_name}}
+  TF_VAR_db_cluster_size: ${{vars.TF_VAR_db_cluster_size}}
+  TF_VAR_db_pg_version: ${{vars.TF_VAR_db_pg_version}}
+  TF_VAR_db_node_count: ${{vars.TF_VAR_db_node_count}}
+  # TF_VAR_val_key
+  TF_VAR_val_key_name: ${{vars.TF_VAR_val_key_name}}
+  TF_VAR_val_key_cluster_size: ${{vars.TF_VAR_val_key_cluster_size}}
+  TF_VAR_val_key_version: ${{vars.TF_VAR_val_key_version}}
+  TF_VAR_val_key_node_count: ${{vars.TF_VAR_val_key_node_count}}
+
+jobs:
+  deploy_staging:
+    if: github.event.inputs.environment == 'staging'
+    runs-on: self-hosted
+    env:
+      # Init Terraform
+      TF_STG_BACKEND_BUCKET: ${{vars.TF_STG_BACKEND_BUCKET}}
+      TF_STG_APP_INFRA_BACKEND_KEY: ${{vars.TF_STG_APP_INFRA_BACKEND_KEY}}
+      TF_STG_BACKEND_REGION: ${{vars.TF_STG_BACKEND_REGION}}
+      # TF_VAR_app_platform
+      TF_VAR_app_name: ${{vars.TF_VAR_app_name}}
+      TF_VAR_image_tag: ${{vars.TF_VAR_image_tag}}
+      TF_VAR_image_repository: ${{vars.TF_VAR_image_repository}}
+      TF_VAR_app_platform_auto_deploy: ${{vars.TF_VAR_app_platform_auto_deploy}}
+      TF_VAR_instance_count: ${{vars.TF_VAR_instance_count}}
+      TF_VAR_instance_size_slug: ${{vars.TF_VAR_instance_size_slug}}
+      TF_VAR_http_port: ${{vars.TF_VAR_http_port}}
+      TF_VAR_celery_app_name: ${{vars.TF_VAR_celery_app_name}}
+      TF_VAR_celery_run_command: ${{vars.TF_VAR_celery_run_command}}
+      TF_VAR_celery_instance_count: ${{vars.TF_VAR_celery_instance_count}}
+      TF_VAR_celery_instance_size_slug: ${{vars.TF_VAR_celery_instance_size_slug}}
+      TF_VAR_celery_beat_app_name: ${{vars.TF_VAR_celery_beat_app_name}}
+      TF_VAR_celery_beat_run_command: ${{vars.TF_VAR_celery_beat_run_command}}
+      TF_VAR_celery_beat_instance_count: ${{vars.TF_VAR_celery_beat_instance_count}}
+      TF_VAR_celery_beat_instance_size_slug: ${{vars.TF_VAR_celery_beat_instance_size_slug}}
+      # TF_VAR_app_platform runtime env-vars
+      TF_VAR_SECRET_KEY: ${{secrets.TF_VAR_SECRET_KEY}}
+      TF_VAR_FERNET_KEY: ${{secrets.TF_VAR_FERNET_KEY}}
+      TF_VAR_ALLOWED_HOSTS: ${{secrets.TF_VAR_ALLOWED_HOSTS}}
+      TF_VAR_CSRF_TRUSTED_ORIGINS: ${{secrets.TF_VAR_CSRF_TRUSTED_ORIGINS}}
+      TF_VAR_TIME_ZONE: ${{vars.TF_VAR_TIME_ZONE}}
+      TF_VAR_IS_DEBUG: ${{vars.TF_VAR_IS_DEBUG}}
+      TF_VAR_DJANGO_SUPERUSER_USERNAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_USERNAME}}
+      TF_VAR_DJANGO_SUPERUSER_FIRST_NAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_FIRST_NAME}}
+      TF_VAR_DJANGO_SUPERUSER_LAST_NAME: ${{vars.TF_VAR_DJANGO_SUPERUSER_LAST_NAME}}
+      TF_VAR_DJANGO_SUPERUSER_EMAIL: ${{vars.TF_VAR_DJANGO_SUPERUSER_EMAIL}}
+      TF_VAR_DJANGO_SUPERUSER_PASSWORD: ${{secrets.TF_VAR_DJANGO_SUPERUSER_PASSWORD}}
+      TF_VAR_EMAIL_BACKEND: ${{vars.TF_VAR_EMAIL_BACKEND}}
+      TF_VAR_EMAIL_HOST: ${{vars.TF_VAR_EMAIL_HOST}}
+      TF_VAR_EMAIL_PORT: ${{vars.TF_VAR_EMAIL_PORT}}
+      TF_VAR_EMAIL_USE_TLS: ${{vars.TF_VAR_EMAIL_USE_TLS}}
+      TF_VAR_EMAIL_HOST_USER: ${{secrets.TF_VAR_EMAIL_HOST_USER}}
+      TF_VAR_EMAIL_HOST_PASSWORD: ${{secrets.TF_VAR_EMAIL_HOST_PASSWORD}}
+      TF_VAR_DB_ENGINE: ${{vars.TF_VAR_DB_ENGINE}}
+      TF_VAR_DB_SSL_MODE: ${{vars.TF_VAR_DB_SSL_MODE}}
+      TF_VAR_REDIS_USE_TLS: ${{vars.TF_VAR_REDIS_USE_TLS}}
+      TF_VAR_CELERY_TIMEZONE: ${{vars.TF_VAR_CELERY_TIMEZONE}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+      - name: Init Terraform
+        working-directory: terraform/digital_ocean/envs/stage
+        run: ./init.sh
+      - name: Terraform Plan
+        working-directory: terraform/digital_ocean/envs/stage
+        run: terraform plan -input=false
+      - name: Terraform Apply and Output
+        working-directory: terraform/digital_ocean/envs/stage
+        run: terraform apply -auto-approve
+
+  deploy_production:
+    if: github.event.inputs.environment == 'production'
+    env:
+      # Init Terraform
+      TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
+      TF_PROD_MAIN_APP_BACKEND_KEY: ${{vars.TF_PROD_MAIN_APP_BACKEND_KEY}}
+      TF_PROD_BACKEND_REGION: ${{vars.TF_PROD_BACKEND_REGION}}
+      # kubernetes cluster
+      TF_VAR_kubernetes_cluster_name: ${{vars.TF_PROD_kubernetes_cluster_name}}
+      TF_VAR_kubernetes_node_pool_name: ${{vars.TF_PROD_kubernetes_node_pool_name}}
+      TF_VAR_kubernetes_node_size: ${{vars.TF_PROD_kubernetes_node_size}}
+      TF_VAR_kubernetes_min_nodes: ${{vars.TF_PROD_kubernetes_min_nodes}}
+      TF_VAR_kubernetes_max_nodes: ${{vars.TF_PROD_kubernetes_max_nodes}}
+      TF_VAR_kubernetes_maintenance_policy_start_time: ${{vars.TF_PROD_kubernetes_maintenance_policy_start_time}}
+      TF_VAR_kubernetes_maintenance_policy_day: ${{vars.TF_PROD_kubernetes_maintenance_policy_day}}
+      TF_VAR_kubernetes_tags: ${{vars.TF_PROD_kubernetes_tags}}
+      TF_VAR_kubernetes_registry_integration: ${{vars.TF_PROD_kubernetes_registry_integration}}
+      TF_VAR_kubernetes_is_high_availability: ${{vars.TF_PROD_kubernetes_is_high_availability}}
+      # Kubernetes namespace
+      TF_VAR_kubernetes_todo_namespace: ${{vars.TF_PROD_kubernetes_todo_namespace}}
+      # Kubernetes secret
+      TF_VAR_kubernetes_todo_secret_name: ${{vars.TF_PROD_kubernetes_todo_secret_name}}
+      TF_VAR_django_secret_key: ${{secrets.TF_VAR_SECRET_KEY}}
+      TF_VAR_django_fernet_key: ${{secrets.TF_VAR_FERNET_KEY}}
+      TF_VAR_django_superuser_email: ${{vars.TF_VAR_DJANGO_SUPERUSER_EMAIL}}
+      TF_VAR_django_superuser_password: ${{secrets.TF_VAR_DJANGO_SUPERUSER_PASSWORD}}
+      TF_VAR_django_email_host: ${{vars.TF_VAR_EMAIL_HOST}}
+      TF_VAR_django_email_host_user: ${{secrets.TF_VAR_EMAIL_HOST_USER}}
+      TF_VAR_django_email_host_password: ${{secrets.TF_VAR_EMAIL_HOST_PASSWORD}}
+      # Kubernetes configmap
+      TF_VAR_kubernetes_todo_config_name: ${{vars.TF_PROD_kubernetes_todo_config_name}}
+      TF_VAR_django_allowed_hosts: ${{vars.TF_PROD_django_allowed_hosts}}
+      TF_VAR_django_csrf_trusted_origins: ${{vars.TF_PROD_django_csrf_trusted_origins}}
+      TF_VAR_django_time_zone: ${{vars.TF_PROD_django_time_zone}}
+      TF_VAR_django_is_debug: ${{vars.TF_PROD_django_is_debug}}
+      TF_VAR_django_todo_backend_port: ${{vars.TF_PROD_django_todo_backend_port}}
+      TF_VAR_django_superuser_username: ${{vars.TF_PROD_django_superuser_username}}
+      TF_VAR_django_superuser_first_name: ${{vars.TF_PROD_django_superuser_first_name}}
+      TF_VAR_django_superuser_last_name: ${{vars.TF_PROD_django_superuser_last_name}}
+      TF_VAR_django_email_backend: ${{vars.TF_PROD_django_email_backend}}
+      TF_VAR_django_email_use_tls: ${{vars.TF_PROD_django_email_use_tls}}
+      TF_VAR_django_email_port: ${{vars.TF_PROD_django_email_port}}
+      TF_VAR_django_celery_timezone: ${{vars.TF_PROD_django_celery_timezone}}
+      TF_VAR_django_redis_use_tls: ${{vars.TF_PROD_django_redis_use_tls}}
+      TF_VAR_django_db_ssl_mode: ${{vars.TF_PROD_django_db_ssl_mode}}
+      TF_VAR_django_db_engine: ${{vars.TF_PROD_django_db_engine}}
+      # Ingress namespace
+      TF_VAR_kubernetes_ingress_namespace: ${{vars.TF_PROD_kubernetes_ingress_namespace}}
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+      - name: Init Terraform
+        working-directory: terraform/digital_ocean/envs/prod/main
+        run: ./init.sh
+      - name: Terraform Plan
+        working-directory: terraform/digital_ocean/envs/prod/main
+        run: terraform plan -input=false
+      - name: Terraform Apply and Output
+        working-directory: terraform/digital_ocean/envs/prod/main
+        run: terraform apply -auto-approve
+
+  install_ArgoCD_on_production:
+    if: github.event.inputs.environment == 'production'
+    runs-on: self-hosted
+    env:
+      # Init Terraform
+      TF_PROD_BACKEND_BUCKET: ${{vars.TF_PROD_BACKEND_BUCKET}}
+      TF_PROD_ARGOCD_BACKEND_KEY: ${{vars.TF_PROD_ARGOCD_BACKEND_KEY}}
+      TF_PROD_BACKEND_REGION: ${{vars.TF_PROD_BACKEND_REGION}}
+      # ArgoCD namespace
+      TF_VAR_argocd_namespace: ${{vars.TF_PROD_argocd_namespace}}
+      # ArgoCD resource
+      TF_VAR_argocd_admin_password: ${{secrets.TF_PROD_argocd_admin_password}}
+      # ArgoCD application
+      TF_VAR_argocd_application_name: ${{TF_PROD_argocd_application_name}}
+      TF_VAR_argocd_repo_url: ${{TF_PROD_argocd_repo_url}}
+      TF_VAR_argocd_target_revision: ${{TF_PROD_argocd_target_revision}}
+      TF_VAR_argocd_path: ${{TF_PROD_argocd_path}}
+      TF_VAR_kubernetes_todo_namespace: ${{vars.TF_PROD_kubernetes_todo_namespace}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+      - name: Init Terraform
+        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        run: ./init.sh
+      - name: Terraform Plan
+        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        run: terraform plan -input=false
+      - name: Terraform Apply and Output
+        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        run: terraform apply -auto-approve

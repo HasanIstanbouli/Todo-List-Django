@@ -11,3 +11,6 @@ output "password" {
   value     = digitalocean_database_cluster.todo_val_key.password
   sensitive = true
 }
+output "username" {
+  value = digitalocean_database_cluster.todo_val_key.user
+}
