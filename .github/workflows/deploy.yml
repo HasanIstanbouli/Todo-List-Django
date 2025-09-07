@@ -199,11 +199,11 @@ jobs:
         with:
           terraform_version: 1.7.5
       - name: Init Terraform
-        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd
         run: ./init.sh
       - name: Terraform Plan
-        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd
         run: terraform plan -input=false
       - name: Terraform Apply and Output
-        working-directory: terraform/digital_ocean/envs/prod/main/argocd
+        working-directory: terraform/digital_ocean/envs/prod/argocd
         run: terraform apply -auto-approve
