@@ -1,161 +1,219 @@
-<h1 align="center">Todo List Web App</h1>
+# Todo List Django - DevOps & Infrastructure as Code
 
-## Live Link: [Todo List](https://todo19.vercel.app/)
+> **A comprehensive DevOps learning project showcasing Infrastructure as Code (IaC) with Terraform, GitOps with ArgoCD,
+and multi-cloud deployments**
 
-*Please note that the PDF download feature is different in the live version due to additional dependencies required
-by [weasyprint](https://pypi.org/project/weasyprint/).*
+## Project Overview
 
-## Table of Contents
+This repository serves as a hands-on learning platform for modern DevOps practices, focusing on Infrastructure as Code
+and GitOps workflows. While the application itself is a Django-based Todo List with Celery for background tasks, the
+primary focus is demonstrating enterprise-grade DevOps tooling and practices.
 
-- [Tech Stack](#tech_stack)
-- [Installation](#installation)
-- [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
+### Why This Project?
 
-# 💻 Tech Stack:
+- **Django Foundation**: Leverages Django's mature ecosystem with advanced features like Celery for background
+  processing
+- **Real-world Complexity**: Includes database migrations, background tasks, and production-ready configurations
+- **DevOps Focus**: Showcases Terraform, ArgoCD, Kubernetes, and multi-cloud deployments
+- **Learning Platform**: Perfect for understanding modern infrastructure patterns and GitOps workflows
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
-![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+## 🛠️ Technology Stack
 
-## Installation
+### Application Layer
 
-### Cloning from GitHub Repository
+- **Framework**: Django 5.0+ with Python 3.12
+- **Background Tasks**: Celery with Redis/Valkey
+- **Database**: PostgreSQL
+- **Containerization**: Docker
 
-To get started with the Todo_List Django Web App, you can clone the repository from GitHub using the following steps:
+### Infrastructure & DevOps
 
-1. **Clone the repository**:
+- **Infrastructure as Code**: Terraform with modular architecture
+- **Container Orchestration**: Kubernetes
+- **GitOps**: ArgoCD for continuous deployment
+- **CI/CD**: GitHub Actions with comprehensive testing
+- **Cloud Providers**: DigitalOcean (implemented), AWS/GCP/Azure (planned)
 
-   ```bash
-   git clone https://github.com/NAHIAN-19/Todo-List-Django.git
-   ```
+## 📁 Project Structure
 
-2. **Install the GTK Installer** (To use weasyprint):
+```
+├── terraform/                    # Infrastructure as Code
+│   └── digital_ocean/           # DigitalOcean implementation
+│       ├── modules/             # Reusable Terraform modules
+│       │   ├── kubernetes/      # K8s cluster management
+│       │   ├── pg_database/     # PostgreSQL database
+│       │   ├── val_key/         # Redis/Valkey cache
+│       │   ├── container_registry/ # Container registry
+│       │   └── app_platform/    # App Platform (alternative)
+│       └── envs/                # Environment-specific configs
+│           ├── prod/            # Production environment
+│           └── stage/           # Staging environment
+├── k8s/                         # Kubernetes manifests
+│   ├── deployment.yaml          # Application deployment
+│   ├── service.yaml             # Service definitions
+│   ├── ingress.yaml             # Ingress configuration
+│   ├── configmap.yaml           # Configuration management
+│   ├── secret.yaml              # Secret management
+│   └── hpa.yaml                 # Horizontal Pod Autoscaler
+├── .github/workflows/           # CI/CD pipelines
+├── Dockerfile                   # Container definition
+└── Todo_List_App/              # Django application
+```
 
-   [GTK Installer](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases/download/2022-01-04/gtk3-runtime-3.24.31-2022-01-04-ts-win64.exe)
+## 🌐 Multi-Cloud Strategy
 
-3. **Navigate to the project folder**:
+### Current Implementation: DigitalOcean
 
-   ```bash
-   cd Todo_List
-   ```
+✅ **Fully Implemented**
 
-4. **Create and activate a virtual environment** (optional but recommended):
+- Kubernetes cluster with auto-scaling
+- Managed PostgreSQL database
+- Managed Redis/Valkey cache
+- Container registry integration
+- ArgoCD for GitOps
+- NGINX Ingress Controller
+- Load balancer configuration
 
-   ```bash
-   python -m venv myworld
-   source myworld/bin/activate  # On Windows use: myworld\Scripts\activate.bat
-   ```
+### Planned Implementations
 
-5. **Install project dependencies**:
+#### AWS (Next Phase)
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+- **EKS** (Elastic Kubernetes Service)
+- **RDS** for PostgreSQL
+- **ElastiCache** for Redis
+- **ECR** (Elastic Container Registry)
+- **ALB/NLB** for load balancing
+- **Route 53** for DNS management
 
-6. **Create a .env file in your project root & add keys**:
+#### Google Cloud Platform
 
-   ```bash
-   python generate_keys.py
-   ```
+- **GKE** (Google Kubernetes Engine)
+- **Cloud SQL** for PostgreSQL
+- **Memorystore** for Redis
+- **GCR** (Google Container Registry)
+- **Cloud Load Balancing**
 
-7. **Install Redis**:
+#### Microsoft Azure
 
-    - For Windows: Follow this guide to install
-      Redis: [Install Redis on Windows](https://redis.io/docs/getting-started/installation/install-redis-on-windows/)
-    - For MacOS: Use Homebrew:
+- **AKS** (Azure Kubernetes Service)
+- **Azure Database for PostgreSQL**
+- **Azure Cache for Redis**
+- **ACR** (Azure Container Registry)
+- **Azure Load Balancer**
 
-      ```bash
-      brew install redis
-      ```
+## 🔄 GitOps Workflow
 
-    - For Linux: Use the following commands:
+### ArgoCD Configuration
 
-      ```bash
-      sudo apt-get update
-      sudo apt-get install redis-server
-      ```
+The project implements a complete GitOps workflow using ArgoCD:
 
-    - Start Redis server:
+1. **Repository Monitoring**: ArgoCD monitors the Git repository for changes
+2. **Automatic Sync**: Changes are automatically deployed to Kubernetes
+3. **Self-Healing**: ArgoCD reverts manual changes to maintain desired state
+4. **Pruning**: Resources not in Git are automatically removed
 
-        - For Windows: Run `redis-server` from the Redis installation folder.
-        - For MacOS/Linux: Run the following:
+### Deployment Flow
 
-          ```bash
-          redis-server
-          ```
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant Git as Git Repository
+    participant CI as GitHub Actions
+    participant Reg as Container Registry
+    participant Argo as ArgoCD
+    participant K8s as Kubernetes
 
-8. **Check .env file and follow the link for Email setup**:
+    Dev->>Git: Push code changes
+    Git->>CI: Trigger CI/CD pipeline
+    CI->>CI: Run tests & quality checks
+    CI->>Reg: Build & push Docker image
+    Git->>Argo: Detect changes
+    Argo->>K8s: Deploy updated application
+    K8s->>Argo: Report deployment status
+```
 
-   [Geekforgeeks email setup in django](https://www.geeksforgeeks.org/setup-sending-email-in-django-project/)
+## 🧪 CI/CD Pipeline
 
-9. **Start the Celery worker in one terminal window**:
+### GitHub Actions Workflow
 
-   ```bash
-   celery -A Todo_List worker --loglevel=info
-   ```
+The CI/CD pipeline includes:
 
-    - Start the Celery Beat scheduler in another terminal window:
+- **Code Quality**: Pre-commit hooks, linting, formatting
+- **Testing**: Unit tests, integration tests, Django checks
+- **Security**: Dependency vulnerability scanning
+- **Infrastructure**: Terraform plan/apply for infrastructure changes
+- **Container**: Docker build, scan, and push
+- **Deployment**: Automated deployment via ArgoCD
 
-      ```bash
-      celery -A Todo_List beat --loglevel=info
-      ```
+### Pipeline Stages
 
-10. **Run database migrations**:
+1. **Test Stage**
+    - Python dependency installation
+    - Code quality checks (pre-commit)
+    - Database migration validation
+    - Unit and integration tests
+    - Security vulnerability scanning
 
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+2. **Build Stage**
+    - Docker image building
+    - Container vulnerability scanning
+    - Push to container registry
 
-11. **Create a superuser account (for admin access)**:
+3. **Deploy Stage**
+    - Infrastructure provisioning (Terraform)
+    - Application deployment (ArgoCD)
 
-    ```bash
-    python manage.py createsuperuser
-    ```
+## 📊 Monitoring & Observability
 
-12. **Start the development server**:
+### Kubernetes Monitoring
 
-    ```bash
-    python manage.py runserver
-    ```
+- **Health Checks**: Liveness and readiness probes
+- **Resource Management**: CPU and memory limits/requests
+- **Auto-scaling**: Horizontal Pod Autoscaler (HPA)
+- **Logging**: Centralized logging with structured logs
 
-13. **Open your web browser and go to** [http://localhost:8000](http://localhost:8000) **to access the Todo_List Django
-    Web App**.
+### Application Monitoring
 
-## Features
+- **Django Health Endpoints**: `/health/` endpoint for monitoring
+- **Celery Monitoring**: Task queue monitoring and metrics
+- **Database Monitoring**: Connection pooling and query performance
 
-The Todo_List Django Web App offers the following features:
+## 🚀 Deployment Environments
 
-- **Task Management**: Easily add, edit, and delete tasks.
-- **Task Prioritization**: Assign priority levels to tasks.
-- **Task Categorization**: Divide tasks into different categories.
-- **Task Reminder**: Send Email to users for specific tasks (with Celery).
-- **User Authentication**: Secure account management (signin, signup, forgot password).
-- **Admin Dashboard**: Access admin dashboard [http://localhost:8000/todo-admin/](http://localhost:8000/todo-admin/) to
-  manage users and tasks.
-- **Profile Management**: View/Change user details.
-- **Export Task Details**: Download PDF / CSV file of your tasks.
-- **Dark Mode**: Trigger Dark theme for an awesome experience.
+### Staging (DigitalOcean App Platform)
 
-## Contributing
+- **Purpose**: Pre-production testing and validation
+- **Platform**: DigitalOcean App Platform
+- **Topology**:
+    - Web service running the Django container (`todo:latest`)
+    - Two background components: Celery Worker and Celery Beat
+- **Provisioning**: Terraform under `terraform/digital_ocean/envs/stage/` using the `app_platform` module
+- **Image Source**: DigitalOcean Container Registry (DOCR); CI builds and pushes `latest` on `develop`
+- **Config/Secrets**: Passed via Terraform variables (`TF_VAR_*`) sourced from GitHub Secrets/Vars
+- **Deployment Trigger**: Push to `develop` → build & push image → App Platform auto-deploys or is updated via Terraform
+  apply
 
-We welcome contributions to improve the Todo_List Django Web App. If you'd like to contribute, please follow these
-guidelines:
+### Production (DigitalOcean Kubernetes + ArgoCD)
 
-1. Fork the repository.
+- **Purpose**: Live environment
+- **Platform**: DigitalOcean Kubernetes (DOKS) with NGINX Ingress
+- **Topology**:
+    - Deployments: `todo-list-web`, `todo-list-celery-worker`, `todo-list-celery-beat`
+    - `Service`, `Ingress`, and `HPA` defined in `k8s/`
+- **Provisioning**: Terraform under `terraform/digital_ocean/envs/prod/` (cluster, DB, Valkey, Ingress-NGINX, ArgoCD)
+- **App CD**: ArgoCD `Application` defined in `terraform/digital_ocean/envs/prod/argocd_app/main.tf` pointing to `k8s/`
+  with automated sync/self-heal/prune
+- **Image Source**: DOCR; CI pushes `stable` on `main`, ArgoCD picks up repo changes and reconciles
+- **Config/Secrets**: `kubernetes_secret` and `kubernetes_config_map` created by Terraform (DB/Redis/Django/env
+  settings)
 
-2. Create a new branch for your feature or bug fix.
+## 📄 License
 
-3. Make your changes and test them thoroughly.
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
 
-4. Submit a pull request with a clear description of your changes.
+---
 
-5. Ensure your code follows best practices and includes necessary tests if applicable.
+**Happy Learning! 🎓**
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+*This project is designed for educational purposes and demonstrates modern DevOps practices. Feel free to fork, modify,
+and learn from the implementations.*
