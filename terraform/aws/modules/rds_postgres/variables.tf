@@ -66,7 +66,7 @@ variable "tags" {
 }
 variable "performance_insights_retention_period" {
   type    = number
-  default = 10
+  default = 7
 }
 variable "kms_rotation_period_in_days" {
   type    = number
