@@ -64,3 +64,15 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+variable "performance_insights_retention_period" {
+  type    = number
+  default = 10
+}
+variable "kms_rotation_period_in_days" {
+  type    = number
+  default = 90
+}
+variable "kms_deletion_window_in_days" {
+  type    = number
+  default = 15
+}

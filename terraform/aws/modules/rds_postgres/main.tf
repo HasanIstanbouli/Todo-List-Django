@@ -28,6 +28,15 @@ resource "aws_security_group_rule" "eks_ingress" {
   description       = "Allow external access to the database"
 }
 
+# Optional: A KMS key for encryption. Using the default RDS key is fine, but this is more secure and flexible.
+resource "aws_kms_key" "rds_kms_key" {
+  description             = "KMS key for RDS encryption and backups"
+  is_enabled              = true
+  enable_key_rotation     = ture
+  rotation_period_in_days = var.kms_rotation_period_in_days
+  deletion_window_in_days = var.kms_deletion_window_in_days
+}
+
 resource "aws_db_instance" "this" {
   identifier     = var.db_name
   engine         = "postgres"
@@ -52,6 +61,12 @@ resource "aws_db_instance" "this" {
   skip_final_snapshot       = false
   final_snapshot_identifier = "${var.db_name}-final-snapshot"
   apply_immediately         = true
+  storage_encrypted         = true
+  kms_key_id                = aws_kms_key.rds_kms_key.arn
+  # Enable Performance Insights for monitoring
+  performance_insights_enabled          = true
+  performance_insights_kms_key_id       = aws_kms_key.rds_kms_key.arn
+  performance_insights_retention_period = var.performance_insights_retention_period
 
   tags = var.tags
 }
