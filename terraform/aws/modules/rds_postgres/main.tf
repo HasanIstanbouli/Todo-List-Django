@@ -67,6 +67,7 @@ resource "aws_db_instance" "this" {
   performance_insights_enabled          = true
   performance_insights_kms_key_id       = aws_kms_key.rds_kms_key.arn
   performance_insights_retention_period = var.performance_insights_retention_period
+  auto_minor_version_upgrade            = true
 
   tags = var.tags
 }
