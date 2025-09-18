@@ -1,7 +1,3 @@
-variable "aws_region" {
-  description = "AWS region to deploy resources into"
-  type        = string
-}
 variable "vpc_name" {
   description = "Name for the VPC"
   type        = string
