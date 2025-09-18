@@ -32,7 +32,7 @@ resource "aws_security_group_rule" "eks_ingress" {
 resource "aws_kms_key" "rds_kms_key" {
   description             = "KMS key for RDS encryption and backups"
   is_enabled              = true
-  enable_key_rotation     = ture
+  enable_key_rotation     = true
   rotation_period_in_days = var.kms_rotation_period_in_days
   deletion_window_in_days = var.kms_deletion_window_in_days
 }
