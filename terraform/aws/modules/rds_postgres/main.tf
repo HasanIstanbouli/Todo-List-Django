@@ -26,6 +26,7 @@ resource "aws_security_group_rule" "eks_ingress" {
   protocol          = "tcp"
   security_group_id = aws_security_group.rds.id
   description       = "Allow external access to the database"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 # Optional: A KMS key for encryption. Using the default RDS key is fine, but this is more secure and flexible.
