@@ -28,6 +28,17 @@ resource "aws_security_group_rule" "eks_ingress" {
   description       = "Allow external access to the database"
   cidr_blocks       = ["0.0.0.0/0"]
 }
+# Private access (from EKS SG only) if publicly_accessible = false
+resource "aws_security_group_rule" "eks_ingress_private" {
+  count                    = var.publicly_accessible ? 0 : 1
+  type                     = "ingress"
+  from_port                = var.db_port
+  to_port                  = var.db_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.rds.id
+  description              = "Allow access to the database from EKS only"
+  source_security_group_id = var.eks_cluster_security_group_id
+}
 
 # Optional: A KMS key for encryption. Using the default RDS key is fine, but this is more secure and flexible.
 resource "aws_kms_key" "rds_kms_key" {
