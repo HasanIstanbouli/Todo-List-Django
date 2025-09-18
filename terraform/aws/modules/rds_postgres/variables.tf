@@ -41,8 +41,7 @@ variable "multi_az" {
   default = false
 }
 variable "publicly_accessible" {
-  type    = bool
-  default = false
+  type = bool
 }
 variable "db_backup_window" {
   type    = string
