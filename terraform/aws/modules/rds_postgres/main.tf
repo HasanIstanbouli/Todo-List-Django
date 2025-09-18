@@ -18,7 +18,7 @@ resource "aws_security_group" "rds" {
   tags = var.tags
 }
 # TODO: Use VPN instead of public access
-resource "aws_security_group_rule" "eks_ingress" {
+resource "aws_security_group_rule" "public_access" {
   count             = var.publicly_accessible ? 1 : 0
   type              = "ingress"
   from_port         = var.db_port
@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "eks_ingress" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 # Private access (from EKS SG only) if publicly_accessible = false
-resource "aws_security_group_rule" "eks_ingress_private" {
+resource "aws_security_group_rule" "eks_private_access" {
   count                    = var.publicly_accessible ? 0 : 1
   type                     = "ingress"
   from_port                = var.db_port
