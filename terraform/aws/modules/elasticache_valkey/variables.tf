@@ -31,7 +31,7 @@ variable "valkey_port" {
   type = number
 }
 variable "eks_cluster_security_group_id" {
-  type = number
+  type = string
 }
 variable "maintenance_window" {
   type    = string
