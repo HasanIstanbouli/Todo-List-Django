@@ -73,5 +73,5 @@ variable "kms_deletion_window_in_days" {
   default = 15
 }
 variable "eks_cluster_security_group_id" {
-  type = number
+  type = string
 }
