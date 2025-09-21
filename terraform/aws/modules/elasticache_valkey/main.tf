@@ -46,3 +46,16 @@ resource "aws_elasticache_replication_group" "this" {
 
   tags = var.tags
 }
+
+resource "aws_elasticache_user" "this" {
+  user_id       = var.user_id
+  user_name     = var.username
+  access_string = var.access_string
+  engine        = "valkey"
+
+  authentication_mode {
+    type      = "password"
+    passwords = [var.password]
+  }
+  depends_on = [aws_elasticache_replication_group.this]
+}

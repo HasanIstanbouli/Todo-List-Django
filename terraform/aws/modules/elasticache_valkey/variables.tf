@@ -40,3 +40,17 @@ variable "maintenance_window" {
   type    = string
   default = "sun:03:00-sun:04:00"
 }
+variable "user_id" {
+  type = string
+}
+variable "username" {
+  type = string
+}
+variable "access_string" {
+  type      = string
+  sensitive = true
+}
+variable "password" {
+  type      = string
+  sensitive = true
+}
