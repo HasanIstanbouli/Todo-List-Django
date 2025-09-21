@@ -59,3 +59,19 @@ resource "aws_elasticache_user" "this" {
   }
   depends_on = [aws_elasticache_replication_group.this]
 }
+
+resource "aws_secretsmanager_secret" "valkey_credentials" {
+  name        = var.valkey_secret_name
+  description = var.valkey_secret_description
+  tags        = var.tags
+}
+resource "aws_secretsmanager_secret_version" "valkey_credentials" {
+  secret_id = aws_secretsmanager_secret.valkey_credentials.id
+  secret_string = jsonencode({
+    primary_endpoint = aws_elasticache_replication_group.this.primary_endpoint_address
+    reader_endpoint  = aws_elasticache_replication_group.this.reader_endpoint_address
+    port             = aws_elasticache_replication_group.this.port
+    username         = aws_elasticache_user.this.user_name
+    password         = aws_elasticache_user.this.passwords[0]
+  })
+}

@@ -54,3 +54,9 @@ variable "password" {
   type      = string
   sensitive = true
 }
+variable "valkey_secret_name" {
+  type = string
+}
+variable "valkey_secret_description" {
+  type = string
+}
