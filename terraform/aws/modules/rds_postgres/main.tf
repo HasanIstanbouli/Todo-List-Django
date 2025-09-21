@@ -83,3 +83,19 @@ resource "aws_db_instance" "this" {
 
   tags = var.tags
 }
+
+resource "aws_secretsmanager_secret" "rds_credentials" {
+  name        = var.rds_secret_name
+  description = var.rds_secret_description
+  tags        = var.tags
+}
+resource "aws_secretsmanager_secret_version" "rds_credentials" {
+  secret_id = aws_secretsmanager_secret.rds_credentials.id
+  secret_string = jsonencode({
+    username = aws_db_instance.this.username
+    password = aws_db_instance.this.password
+    host     = aws_db_instance.this.endpoint
+    port     = aws_db_instance.this.port
+    db_name  = aws_db_instance.this.db_name
+  })
+}

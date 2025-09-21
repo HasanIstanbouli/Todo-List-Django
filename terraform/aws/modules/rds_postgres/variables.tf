@@ -75,3 +75,9 @@ variable "kms_deletion_window_in_days" {
 variable "eks_cluster_security_group_id" {
   type = string
 }
+variable "rds_secret_name" {
+  type = string
+}
+variable "rds_secret_description" {
+  type = string
+}
