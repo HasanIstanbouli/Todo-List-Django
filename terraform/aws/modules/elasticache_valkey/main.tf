@@ -1,11 +1,11 @@
 resource "aws_elasticache_subnet_group" "this" {
-  name       = "${var.cluster_name}-subnets"
+  name       = "${var.replication_group_id}-subnets"
   subnet_ids = var.subnet_ids
   tags       = var.tags
 }
 
 resource "aws_security_group" "valkey" {
-  name        = "${var.cluster_name}-valkey-sg"
+  name        = "${var.replication_group_id}-valkey-sg"
   description = "ValKey access"
   vpc_id      = var.vpc_id
   egress {
@@ -17,6 +17,7 @@ resource "aws_security_group" "valkey" {
   tags = var.tags
 }
 
+# Private access from EKS SG
 resource "aws_security_group_rule" "eks_ingress_private" {
   type                     = "ingress"
   from_port                = var.valkey_port
@@ -27,17 +28,19 @@ resource "aws_security_group_rule" "eks_ingress_private" {
   source_security_group_id = var.eks_cluster_security_group_id
 }
 
-resource "aws_elasticache_cluster" "this" {
-  cluster_id                 = var.cluster_name
+resource "aws_elasticache_replication_group" "this" {
+  description                = var.description
+  replication_group_id       = var.replication_group_id
   engine                     = "valkey"
   port                       = var.valkey_port
   engine_version             = var.engine_version
   node_type                  = var.node_type
-  num_cache_nodes            = var.num_cache_nodes
+  num_cache_clusters         = var.num_cache_clusters
   subnet_group_name          = aws_elasticache_subnet_group.this.name
   security_group_ids         = [aws_security_group.valkey.id]
   parameter_group_name       = var.parameter_group_name
   maintenance_window         = var.maintenance_window
+  automatic_failover_enabled = true
   apply_immediately          = true
   auto_minor_version_upgrade = true
 

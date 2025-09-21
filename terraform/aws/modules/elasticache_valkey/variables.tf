@@ -4,20 +4,23 @@ variable "vpc_id" {
 variable "subnet_ids" {
   type = list(string)
 }
-variable "cluster_name" {
+variable "description" {
+  type = string
+}
+variable "replication_group_id" {
   type = string
 }
 variable "node_type" {
   type    = string
   default = "cache.t4g.micro"
 }
-variable "num_cache_nodes" {
+variable "num_cache_clusters" {
   type    = number
-  default = 1
+  default = 2
 }
 variable "engine_version" {
   type    = string
-  default = "7.1"
+  default = "8"
 }
 variable "parameter_group_name" {
   type    = string

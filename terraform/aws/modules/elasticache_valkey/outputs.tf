@@ -1,6 +1,11 @@
-output "redis_endpoint" {
-  value = aws_elasticache_cluster.this.cache_nodes[0].address
+output "valkey_primary_endpoint" {
+  value = aws_elasticache_replication_group.this.primary_endpoint_address
 }
-output "redis_port" {
-  value = aws_elasticache_cluster.this.cache_nodes[0].port
+
+output "valkey_reader_endpoint" {
+  value = aws_elasticache_replication_group.this.reader_endpoint_address
+}
+
+output "valkey_port" {
+  value = aws_elasticache_replication_group.this.port
 }
