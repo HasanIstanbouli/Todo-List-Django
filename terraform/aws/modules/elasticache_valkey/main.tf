@@ -72,6 +72,6 @@ resource "aws_secretsmanager_secret_version" "valkey_credentials" {
     reader_endpoint  = aws_elasticache_replication_group.this.reader_endpoint_address
     port             = aws_elasticache_replication_group.this.port
     username         = aws_elasticache_user.this.user_name
-    password         = aws_elasticache_user.this.passwords[0]
+    password         = one(aws_elasticache_user.this.authentication_mode[0].passwords)
   })
 }
