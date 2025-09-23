@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: todo-list-celery-worker
-          image: registry.digitalocean.com/todo-django-registry/todo:stable
+          image: TODO_IMAGE
           command: [ "./entrypoint.sh" ]
           args: [ "celery" ]
           envFrom:

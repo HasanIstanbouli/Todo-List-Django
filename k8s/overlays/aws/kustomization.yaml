@@ -3,7 +3,9 @@ kind: Kustomization
 
 namespace: todo-namespace-default
 images:
-  - 149681869636.dkr.ecr.eu-central-1.amazonaws.com/todo-list-default:latest
+  - name: TODO_IMAGE
+    newName: 149681869636.dkr.ecr.eu-central-1.amazonaws.com/todo-list-default
+    newTag: latest
 resources:
   - ../../base
 commonLabels:
