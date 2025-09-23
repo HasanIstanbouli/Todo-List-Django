@@ -56,6 +56,10 @@ variable "deletion_protection" {
   type    = bool
   default = false
 }
+variable "skip_final_snapshot" {
+  type    = bool
+  default = true
+}
 variable "tags" {
   type    = map(string)
   default = {}
