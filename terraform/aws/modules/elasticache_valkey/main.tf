@@ -40,6 +40,7 @@ resource "aws_elasticache_replication_group" "this" {
   security_group_ids         = [aws_security_group.valkey.id]
   parameter_group_name       = var.parameter_group_name
   maintenance_window         = var.maintenance_window
+  transit_encryption_enabled = true
   automatic_failover_enabled = true
   apply_immediately          = true
   auto_minor_version_upgrade = true
