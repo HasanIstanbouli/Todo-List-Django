@@ -27,6 +27,24 @@ resource "aws_security_group_rule" "eks_ingress_private" {
   description              = "Allow access to the database from EKS only"
   source_security_group_id = var.eks_cluster_security_group_id
 }
+resource "aws_elasticache_user" "this" {
+  user_id       = var.user_id
+  user_name     = var.username
+  access_string = var.access_string
+  engine        = "valkey"
+  authentication_mode {
+    type      = "password"
+    passwords = [var.password]
+  }
+  tags = var.tags
+}
+resource "aws_elasticache_user_group" "this" {
+  engine        = "valkey"
+  user_group_id = var.user_group_id
+  user_ids      = [aws_elasticache_user.this.user_id]
+  tags          = var.tags
+}
+
 
 resource "aws_elasticache_replication_group" "this" {
   description                = var.description
@@ -40,25 +58,13 @@ resource "aws_elasticache_replication_group" "this" {
   security_group_ids         = [aws_security_group.valkey.id]
   parameter_group_name       = var.parameter_group_name
   maintenance_window         = var.maintenance_window
+  user_group_ids             = [aws_elasticache_user_group.this.user_group_id]
   transit_encryption_enabled = true
   automatic_failover_enabled = true
   apply_immediately          = true
   auto_minor_version_upgrade = true
 
   tags = var.tags
-}
-
-resource "aws_elasticache_user" "this" {
-  user_id       = var.user_id
-  user_name     = var.username
-  access_string = var.access_string
-  engine        = "valkey"
-
-  authentication_mode {
-    type      = "password"
-    passwords = [var.password]
-  }
-  depends_on = [aws_elasticache_replication_group.this]
 }
 
 resource "aws_secretsmanager_secret" "valkey_credentials" {
