@@ -32,22 +32,33 @@ primary focus is demonstrating enterprise-grade DevOps tooling and practices.
 - **Container Orchestration**: Kubernetes
 - **GitOps**: ArgoCD for continuous deployment
 - **CI/CD**: GitHub Actions with comprehensive testing
-- **Cloud Providers**: DigitalOcean (implemented), AWS/GCP/Azure (planned)
+- **Cloud Providers**: DigitalOcean (implemented), AWS (implemented), GCP/Azure (planned)
 
 ## 📁 Project Structure
 
 ```
 ├── terraform/                    # Infrastructure as Code
-│   └── digital_ocean/           # DigitalOcean implementation
+│   ├── digital_ocean/           # DigitalOcean implementation
+│   │   ├── modules/             # Reusable Terraform modules
+│   │   │   ├── kubernetes/      # K8s cluster management
+│   │   │   ├── pg_database/     # PostgreSQL database
+│   │   │   ├── val_key/         # Redis/Valkey cache
+│   │   │   ├── container_registry/ # Container registry
+│   │   │   └── app_platform/    # App Platform (alternative)
+│   │   └── envs/                # Environment-specific configs
+│   │       ├── prod/            # Production environment
+│   │       └── stage/           # Staging environment
+│   └── aws/                     # AWS implementation
 │       ├── modules/             # Reusable Terraform modules
-│       │   ├── kubernetes/      # K8s cluster management
-│       │   ├── pg_database/     # PostgreSQL database
-│       │   ├── val_key/         # Redis/Valkey cache
-│       │   ├── container_registry/ # Container registry
-│       │   └── app_platform/    # App Platform (alternative)
-│       └── envs/                # Environment-specific configs
-│           ├── prod/            # Production environment
-│           └── stage/           # Staging environment
+│       │   ├── network/         # VPC, subnets, NAT gateways
+│       │   ├── eks/             # EKS cluster and node groups
+│       │   ├── rds_postgres/    # RDS PostgreSQL database
+│       │   ├── elasticache_valkey/ # ElastiCache Redis/Valkey
+│       │   └── ecr/             # Elastic Container Registry
+│       └── main/                # Multi-stage deployment
+│           ├── 0-infra/         # Infrastructure provisioning
+│           ├── 1-k8s_tooling/   # K8s tools (ArgoCD, Ingress)
+│           └── 2-argocd_app/    # ArgoCD application config
 ├── k8s/                         # Kubernetes manifests
 │   ├── deployment.yaml          # Application deployment
 │   ├── service.yaml             # Service definitions
@@ -62,9 +73,9 @@ primary focus is demonstrating enterprise-grade DevOps tooling and practices.
 
 ## 🌐 Multi-Cloud Strategy
 
-### Current Implementation: DigitalOcean
+### Current Implementations
 
-✅ **Fully Implemented**
+#### DigitalOcean ✅ **Fully Implemented**
 
 - Kubernetes cluster with auto-scaling
 - Managed PostgreSQL database
@@ -74,16 +85,18 @@ primary focus is demonstrating enterprise-grade DevOps tooling and practices.
 - NGINX Ingress Controller
 - Load balancer configuration
 
+#### AWS ✅ **Fully Implemented**
+
+- **EKS** (Elastic Kubernetes Service) with managed node groups
+- **RDS** for PostgreSQL with multi-AZ support
+- **ElastiCache** for Redis/Valkey with user authentication
+- **ECR** (Elastic Container Registry) with vulnerability scanning
+- **VPC** with public/private subnets and NAT gateways
+- **ArgoCD** for GitOps deployment
+- **NGINX Ingress Controller** with AWS Load Balancer
+- **AWS Secrets Manager** for credential management
+
 ### Planned Implementations
-
-#### AWS (Next Phase)
-
-- **EKS** (Elastic Kubernetes Service)
-- **RDS** for PostgreSQL
-- **ElastiCache** for Redis
-- **ECR** (Elastic Container Registry)
-- **ALB/NLB** for load balancing
-- **Route 53** for DNS management
 
 #### Google Cloud Platform
 
@@ -207,6 +220,28 @@ The CI/CD pipeline includes:
 - **Config/Secrets**: `kubernetes_secret` and `kubernetes_config_map` created by Terraform (DB/Redis/Django/env
   settings)
 
+### Production (AWS EKS + ArgoCD)
+
+- **Purpose**: Live environment on AWS
+- **Platform**: AWS EKS with NGINX Ingress Controller
+- **Topology**:
+    - Deployments: `todo-list-web`, `todo-list-celery-worker`, `todo-list-celery-beat`
+    - `Service`, `Ingress`, and `HPA` defined in `k8s/`
+- **Provisioning**: Multi-stage Terraform under `terraform/aws/main/`:
+    - `0-infra/`: VPC, EKS, RDS, ElastiCache, ECR
+    - `1-k8s_tooling/`: NGINX Ingress, ArgoCD, Kubernetes secrets/configmaps
+    - `2-argocd_app/`: ArgoCD Application configuration
+- **App CD**: ArgoCD `Application` defined in `terraform/aws/main/2-argocd_app/main.tf` pointing to `k8s/`
+  with automated sync/self-heal/prune
+- **Image Source**: ECR; CI pushes `stable` on `main`, ArgoCD picks up repo changes and reconciles
+- **Config/Secrets**: AWS Secrets Manager integration with Kubernetes secrets created by Terraform
+- **Infrastructure Features**:
+    - Multi-AZ RDS PostgreSQL with automated backups
+    - ElastiCache Redis with user authentication
+    - ECR with vulnerability scanning
+    - VPC with public/private subnets and NAT gateways
+    - AWS Load Balancer via NGINX Ingress Controller
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
@@ -217,3 +252,4 @@ This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.t
 
 *This project is designed for educational purposes and demonstrates modern DevOps practices. Feel free to fork, modify,
 and learn from the implementations.*
+
