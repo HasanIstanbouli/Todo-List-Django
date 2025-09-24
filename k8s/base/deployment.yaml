@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: todo-list-web
-          image: registry.digitalocean.com/todo-django-registry/todo:stable
+          image: TODO_IMAGE
           ports:
             - containerPort: 8000
           envFrom:

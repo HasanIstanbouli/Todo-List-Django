@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-list-celery-worker
+  name: todo-list-celery-beat
   namespace: todo-list
   labels:
     app: todo-list
-    component: celery-worker
+    component: celery-beat
 spec:
-  replicas: 2
+  replicas: 1  # Only one instance of beat scheduler
   selector:
     matchLabels:
       app: todo-list
-      component: celery-worker
+      component: celery-beat
   template:
     metadata:
       labels:
         app: todo-list
-        component: celery-worker
+        component: celery-beat
     spec:
       containers:
-        - name: todo-list-celery-worker
-          image: registry.digitalocean.com/todo-django-registry/todo:stable
+        - name: todo-list-celery-beat
+          image: TODO_IMAGE
           command: [ "./entrypoint.sh" ]
-          args: [ "celery" ]
+          args: [ "celery-beat" ]
           envFrom:
             - configMapRef:
                 name: todo-list-config
